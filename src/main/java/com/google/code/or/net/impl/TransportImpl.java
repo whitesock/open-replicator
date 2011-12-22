@@ -116,6 +116,8 @@ public class TransportImpl extends AbstractTransport {
 		closeQuietly(this.is);
 		closeQuietly(this.os);
 		closeQuietly(this.socket);
+		
+		//
 		if(isVerbose() && LOGGER.isInfoEnabled()) {
 			LOGGER.info("disconnected from {}:{}", this.context.getServerHost(), this.context.getServerPort());
 		}
@@ -124,6 +126,22 @@ public class TransportImpl extends AbstractTransport {
 	/**
 	 * 
 	 */
+	public int getLevel1BufferSize() {
+		return level1BufferSize;
+	}
+
+	public void setLevel1BufferSize(int size) {
+		this.level1BufferSize = size;
+	}
+
+	public int getLevel2BufferSize() {
+		return level2BufferSize;
+	}
+
+	public void setLevel2BufferSize(int size) {
+		this.level2BufferSize = size;
+	}
+	
 	public TransportInputStream getInputStream() {
 		return this.is;
 	}
@@ -138,22 +156,6 @@ public class TransportImpl extends AbstractTransport {
 
 	public void setSocketFactory(SocketFactory factory) {
 		this.socketFactory = factory;
-	}
-	
-	public int getLevel1BufferSize() {
-		return level1BufferSize;
-	}
-
-	public void setLevel1BufferSize(int level1BufferSize) {
-		this.level1BufferSize = level1BufferSize;
-	}
-
-	public int getLevel2BufferSize() {
-		return level2BufferSize;
-	}
-
-	public void setLevel2BufferSize(int level2BufferSize) {
-		this.level2BufferSize = level2BufferSize;
 	}
 	
 	/**
