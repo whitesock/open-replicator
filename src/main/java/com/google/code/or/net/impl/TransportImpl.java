@@ -52,7 +52,7 @@ public class TransportImpl extends AbstractTransport {
 	/**
 	 * 
 	 */
-	public final boolean isConnected() {
+	public boolean isConnected() {
 		return this.connected.get();
 	}
 	
