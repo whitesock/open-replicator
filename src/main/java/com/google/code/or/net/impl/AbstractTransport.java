@@ -31,7 +31,7 @@ import com.google.code.or.net.TransportContext;
 public abstract class AbstractTransport implements Transport {
 	//
 	protected Transport.Authenticator authenticator;
-	protected final DefaultContext context = new DefaultContext();
+	protected final Context context = new Context();
 	protected final AtomicBoolean verbose = new AtomicBoolean(true);
 
 	/**
@@ -60,7 +60,7 @@ public abstract class AbstractTransport implements Transport {
 	/**
 	 * 
 	 */
-	public static class DefaultContext implements TransportContext {
+	public static class Context implements TransportContext {
 		//
 		private long threadId;
 		private String scramble;
