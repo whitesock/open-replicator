@@ -124,7 +124,6 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
         	while (this.ringBuffer.isEmpty()) {
         		if(this.exception != null) throw this.exception;
             	this.bufferNotEmpty.awaitUninterruptibly();
-            	System.out.println("got it b");
             	if(this.closed.get()) throw new EOFException();
             }
             
