@@ -59,7 +59,7 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 				// Parse packet
 				final int packetLength = is.readInt(3);
 				final int packetSequence = is.readInt(1);
-				is.setReadLimit(packetLength); // Enforce the packet boundary
+				is.setReadLimit(packetLength); // Ensure the packet boundary
 				is.skip(1);
 				if(isVerbose() && LOGGER.isInfoEnabled()) {
 					LOGGER.info("received a packet, length: {}, sequence: {}", packetLength, packetSequence);
@@ -82,7 +82,7 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 					this.defaultEventParser.parse(is, header, context);
 				}
 				
-				// Enforce the packet boundary
+				// Ensure the packet boundary
 				if(is.available() != 0) {
 					throw new NestableRuntimeException("assertion failed, available: " + is.available() + ", event type: " + header.getEventType());
 				}
