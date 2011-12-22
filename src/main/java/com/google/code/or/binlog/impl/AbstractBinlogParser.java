@@ -69,7 +69,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	
 	public void start(XInputStream is) throws Exception {
 		//
-		if(this.running.compareAndSet(false, true)) {
+		if(!this.running.compareAndSet(false, true)) {
 			return;
 		}
 		
@@ -80,7 +80,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 
 	public void stop() throws Exception {
 		//
-		if(this.running.compareAndSet(true, false)) {
+		if(!this.running.compareAndSet(true, false)) {
 			return;
 		}
 		

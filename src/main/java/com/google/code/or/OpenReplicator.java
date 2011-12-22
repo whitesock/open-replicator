@@ -16,11 +16,15 @@
  */
 package com.google.code.or;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.code.or.binlog.BinlogEventListener;
+import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.BinlogParser;
 import com.google.code.or.binlog.impl.BinlogParserImpl;
+import com.google.code.or.binlog.impl.event.XidEvent;
 import com.google.code.or.binlog.impl.parser.DeleteRowsEventParser;
 import com.google.code.or.binlog.impl.parser.FormatDescriptionEventParser;
 import com.google.code.or.binlog.impl.parser.IncidentEventParser;
@@ -35,6 +39,7 @@ import com.google.code.or.binlog.impl.parser.UserVarEventParser;
 import com.google.code.or.binlog.impl.parser.WriteRowsEventParser;
 import com.google.code.or.binlog.impl.parser.XidEventParser;
 import com.google.code.or.common.glossary.column.StringColumn;
+import com.google.code.or.common.logging.Log4jInitializer;
 import com.google.code.or.io.impl.SocketFactoryImpl;
 import com.google.code.or.net.Packet;
 import com.google.code.or.net.Transport;
@@ -54,9 +59,9 @@ public class OpenReplicator {
 	protected String host;
 	protected String user;
 	protected String password;
-	protected String binlogFile;
 	protected int serverId = 6789;
 	protected int binlogPosition = 4;
+	protected String binlogFileName;
 	protected String encoding = "utf-8";
 	protected int level1BufferSize = 1024 * 1024;
 	protected int level2BufferSize = 8 * 1024 * 1024;
@@ -76,7 +81,7 @@ public class OpenReplicator {
 	
 	public void start() throws Exception {
 		//
-		if(this.running.compareAndSet(false, true)) {
+		if(!this.running.compareAndSet(false, true)) {
 			return;
 		}
 		
@@ -95,7 +100,7 @@ public class OpenReplicator {
 
 	public void stop() throws Exception {
 		//
-		if(this.running.compareAndSet(true, false)) {
+		if(!this.running.compareAndSet(true, false)) {
 			return;
 		}
 		
@@ -154,20 +159,20 @@ public class OpenReplicator {
 		this.serverId = serverId;
 	}
 	
-	public String getBinlogFile() {
-		return binlogFile;
-	}
-
-	public void setBinlogFile(String binlogFile) {
-		this.binlogFile = binlogFile;
-	}
-
 	public int getBinlogPosition() {
 		return binlogPosition;
 	}
 
 	public void setBinlogPosition(int binlogPosition) {
 		this.binlogPosition = binlogPosition;
+	}
+	
+	public String getBinlogFileName() {
+		return binlogFileName;
+	}
+
+	public void setBinlogFileName(String binlogFileName) {
+		this.binlogFileName = binlogFileName;
 	}
 	
 	public int getLevel1BufferSize() {
@@ -222,7 +227,7 @@ public class OpenReplicator {
 		command.setBinlogFlag(0);
 		command.setServerId(this.serverId);
 		command.setBinlogPosition(this.binlogPosition);
-		command.setBinlogFileName(StringColumn.valueOf(this.binlogFile.getBytes(this.encoding)));
+		command.setBinlogFileName(StringColumn.valueOf(this.binlogFileName.getBytes(this.encoding)));
 		this.transport.getOutputStream().writePacket(command);
 		this.transport.getOutputStream().flush();
 		
@@ -272,5 +277,41 @@ public class OpenReplicator {
 		r.registgerEventParser(new UpdateRowsEventParser());
 		r.registgerEventParser(new FormatDescriptionEventParser());
 		return r;
+	}
+
+	/**
+	 * 
+	 */
+	public static void main(String args[]) throws Exception {
+		//
+		Log4jInitializer.initialize();
+		
+		//
+		final OpenReplicator or = new OpenReplicator();
+		or.setUser("xjq");
+		or.setPassword("123456");
+		or.setHost("localhost");
+		or.setPort(3306);
+		or.setServerId(6789);
+		or.setBinlogPosition(4);
+		or.setBinlogFileName("mysql_bin.000028");
+		or.setBinlogEventListener(new BinlogEventListener() {
+			public void onEvents(BinlogEventV4 event) {
+				if(event instanceof XidEvent) {
+					System.out.println(event);
+				}
+			}
+		});
+		or.start();
+		
+		//
+		System.out.println("press 'q' to stop");
+		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		for(String line = br.readLine(); line != null; line = br.readLine()) {
+			if(line.equals("q")) {
+				or.stop();
+				break;
+			}
+		}
 	}
 }
