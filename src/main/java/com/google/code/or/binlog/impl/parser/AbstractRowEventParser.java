@@ -68,7 +68,7 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 	 */
 	public AbstractRowEventParser(int eventType) {
 		super(eventType);
-		this.filter = new DefaultRowEventFilter();
+		this.filter = new DefaultFilter();
 	}
 	
 	/**
@@ -174,7 +174,7 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 	/**
 	 * 
 	 */
-	public static class DefaultRowEventFilter implements BinlogRowEventFilter {
+	public static class DefaultFilter implements BinlogRowEventFilter {
 
 		public boolean accepts(long tableId, TableMapEvent event) {
 			//
