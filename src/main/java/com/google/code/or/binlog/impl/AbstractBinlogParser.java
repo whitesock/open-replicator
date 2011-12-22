@@ -178,7 +178,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 			try {
 				doParse(this.is);
 			} catch (Exception e) {
-				LOGGER.error("failed to parse", e);
+				LOGGER.error("failed to parse", e); // TODO
 			}
 		}
 	}
