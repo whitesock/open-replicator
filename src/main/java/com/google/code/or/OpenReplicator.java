@@ -105,6 +105,7 @@ public class OpenReplicator {
 		}
 		
 		//
+		this.transport.disconnect();
 		this.binlogParser.stop();
 	}
 	
@@ -294,7 +295,7 @@ public class OpenReplicator {
 		or.setPort(3306);
 		or.setServerId(6789);
 		or.setBinlogPosition(4);
-		or.setBinlogFileName("mysql_bin.000028");
+		or.setBinlogFileName("mysql_bin.000033");
 		or.setBinlogEventListener(new BinlogEventListener() {
 			public void onEvents(BinlogEventV4 event) {
 				if(event instanceof XidEvent) {
