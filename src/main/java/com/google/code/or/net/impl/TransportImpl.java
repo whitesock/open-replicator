@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.code.or.io.SocketFactory;
-import com.google.code.or.io.impl.SocketFactoryImpl;
 import com.google.code.or.io.util.ActiveBufferedInputStream;
 import com.google.code.or.net.Packet;
 import com.google.code.or.net.TransportException;
@@ -31,6 +30,7 @@ import com.google.code.or.net.TransportInputStream;
 import com.google.code.or.net.TransportOutputStream;
 import com.google.code.or.net.impl.packet.ErrorPacket;
 import com.google.code.or.net.impl.packet.GreetingPacket;
+import com.google.code.or.net.util.TransportUtils;
 
 /**
  * 
@@ -68,7 +68,6 @@ public class TransportImpl extends AbstractTransport {
 		}
 		
 		//
-		if(this.socketFactory == null) this.socketFactory = getDefaultSocketFactory();
 		this.socket = this.socketFactory.create(host, port);
 		this.os = new TransportOutputStreamImpl(this.socket.getOutputStream());
 		if(this.level2BufferSize <= 0) {
@@ -113,9 +112,9 @@ public class TransportImpl extends AbstractTransport {
 		}
 		
 		//
-		closeQuietly(this.is);
-		closeQuietly(this.os);
-		closeQuietly(this.socket);
+		TransportUtils.closeQuietly(this.is);
+		TransportUtils.closeQuietly(this.os);
+		TransportUtils.closeQuietly(this.socket);
 		
 		//
 		if(isVerbose() && LOGGER.isInfoEnabled()) {
@@ -156,16 +155,5 @@ public class TransportImpl extends AbstractTransport {
 
 	public void setSocketFactory(SocketFactory factory) {
 		this.socketFactory = factory;
-	}
-	
-	/**
-	 * 
-	 */
-	protected SocketFactory getDefaultSocketFactory() {
-		final SocketFactoryImpl r = new SocketFactoryImpl();
-		r.setKeepAlive(true);
-		r.setTcpNoDelay(false);
-		r.setReceiveBufferSize(128 * 1024);
-		return r;
 	}
 }

@@ -14,30 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.or.binlog;
+package com.google.code.or.net.util;
+
+import java.net.Socket;
 
 import com.google.code.or.io.XInputStream;
+import com.google.code.or.io.XOutputStream;
 
 /**
  * 
  * @author Jingqi Xu
- * @see http://forge.mysql.com/wiki/MySQL_Internals
  */
-public interface BinlogParser {
+public final class TransportUtils {
 	
 	/**
 	 * 
 	 */
-	boolean isRunning();
+	public static void closeQuietly(Socket socket) {
+		try {
+			socket.close();
+		} catch(Exception e) {
+			// NOP
+		}
+	}
 	
-	void stop() throws Exception;
+	public static void closeQuietly(XInputStream is) {
+		try {
+			is.close();
+		} catch(Exception e) {
+			// NOP
+		}
+	}
 	
-	void start(XInputStream is) throws Exception;
-	
-	/**
-	 * 
-	 */
-	BinlogEventListener getBinlogEventListener();
-	
-	void setBinlogEventListener(BinlogEventListener listener);
+	public static void closeQuietly(XOutputStream os) {
+		try {
+			os.close();
+		} catch(Exception e) {
+			// NOP
+		}
+	}
 }

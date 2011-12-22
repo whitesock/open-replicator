@@ -16,11 +16,8 @@
  */
 package com.google.code.or.binlog.impl;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.slf4j.Logger;
@@ -37,34 +34,41 @@ import com.google.code.or.io.XInputStream;
  * 
  * @author Jingqi Xu
  */
-public class ReplicationBasedBinlogParser extends AbstractBinlogParser implements BinlogEventListener {
+public class BinlogParserImpl extends AbstractBinlogParser implements BinlogEventListener {
 	//
-	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationBasedBinlogParser.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BinlogParserImpl.class);
 	
 	//
+	protected Thread worker;
 	protected final Map<Long, TableMapEvent> tableMaps;
 	
 	/**
 	 * 
 	 */
-	public ReplicationBasedBinlogParser() {
+	public BinlogParserImpl() {
 		this.tableMaps = new HashMap<Long, TableMapEvent>();
-	}
-	
-	@Override
-	protected void doStart() {
-		LOGGER.info(getClass().getName() + " was successfully started"); 
-	}
-
-	@Override
-	protected void doStop(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
-		LOGGER.info(getClass().getName() + " was successfully stopped"); 
 	}
 	
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is) throws IOException {
+	public void onEvents(BinlogEventV4 event) {
+		//
+		if(event == null) return;
+		if(event instanceof TableMapEvent) {
+			final TableMapEvent tme = (TableMapEvent)event;
+			this.tableMaps.put(tme.getTableId(), tme);
+		}
+		
+		//
+		this.listener.onEvents(event);
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	protected void doParse(XInputStream is) throws Exception {
 		//
 		while(isRunning()) {
 			try {
@@ -106,20 +110,5 @@ public class ReplicationBasedBinlogParser extends AbstractBinlogParser implement
 				is.setReadLimit(0);
 			}
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	public void onEvents(BinlogEventV4 event) {
-		//
-		if(event == null) return;
-		if(event instanceof TableMapEvent) {
-			final TableMapEvent tme = (TableMapEvent)event;
-			this.tableMaps.put(tme.getTableId(), tme);
-		}
-		
-		//
-		this.listener.onEvents(event);
 	}
 }

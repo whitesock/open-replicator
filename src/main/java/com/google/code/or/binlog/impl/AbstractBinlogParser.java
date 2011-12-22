@@ -19,8 +19,6 @@ package com.google.code.or.binlog.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -33,6 +31,7 @@ import com.google.code.or.binlog.BinlogParser;
 import com.google.code.or.binlog.ParserContext;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.parser.NopEventParser;
+import com.google.code.or.io.XInputStream;
 
 /**
  * 
@@ -40,15 +39,15 @@ import com.google.code.or.binlog.impl.parser.NopEventParser;
  */
 public abstract class AbstractBinlogParser implements BinlogParser {
 	//
+	protected Thread worker;
 	protected BinlogEventListener listener;
 	protected BinlogEventParser defaultEventParser;
-	protected final AtomicBoolean verbose = new AtomicBoolean(false);
 	protected final AtomicBoolean running = new AtomicBoolean(false);
+	protected final AtomicBoolean verbose = new AtomicBoolean(false);
 	protected final BinlogEventParser[] parsers = new BinlogEventParser[128];
 	
 	//
-	protected abstract void doStart();
-	protected abstract void doStop(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException;
+	protected abstract void doParse(XInputStream is) throws Exception;
 	
 
 	/**
@@ -65,26 +64,27 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		return this.running.get();
 	}
 	
-	public final void start() {
+	public final void start(XInputStream is) throws Exception {
 		//
 		if(this.running.compareAndSet(false, true)) {
 			return;
 		}
 		
 		//
-		doStart();
+		this.worker = new Worker(is);
+		this.worker.start();
 	}
 
-	public final void stop(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+	public final void stop() throws Exception {
 		//
 		if(this.running.compareAndSet(true, false)) {
 			return;
 		}
 		
 		//
-		doStop(timeout, unit);
+		this.worker.join();
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -148,6 +148,29 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	/**
 	 * 
 	 */
+	protected class Worker extends Thread {
+		//
+		private XInputStream is;
+		
+		/**
+		 * 
+		 */
+		public Worker(XInputStream is) {
+			this.is = is;
+		}
+
+		/**
+		 * 
+		 */
+		public void run() {
+			try {
+				doParse(this.is);
+			} catch (Exception e) {
+				// TODO
+			}
+		}
+	}
+	
 	protected final class Context implements ParserContext {
 		//
 		private BinlogEventV4Header header;

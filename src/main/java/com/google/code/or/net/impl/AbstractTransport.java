@@ -16,14 +16,11 @@
  */
 package com.google.code.or.net.impl;
 
-import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import com.google.code.or.io.XInputStream;
-import com.google.code.or.io.XOutputStream;
 import com.google.code.or.net.Transport;
 import com.google.code.or.net.TransportContext;
 
@@ -48,7 +45,7 @@ public abstract class AbstractTransport implements Transport {
 		this.verbose.set(verbose);
 	}
 	
-	public DefaultContext getContext() {
+	public TransportContext getContext() {
 		return context;
 	}
 	
@@ -58,33 +55,6 @@ public abstract class AbstractTransport implements Transport {
 
 	public void setAuthenticator(Transport.Authenticator authenticator) {
 		this.authenticator = authenticator;
-	}
-	
-	/**
-	 * 
-	 */
-	protected final void closeQuietly(Socket socket) {
-		try {
-			socket.close();
-		} catch(Exception e) {
-			// NOP
-		}
-	}
-	
-	protected final void closeQuietly(XInputStream is) {
-		try {
-			is.close();
-		} catch(Exception e) {
-			// NOP
-		}
-	}
-	
-	protected final void closeQuietly(XOutputStream os) {
-		try {
-			os.close();
-		} catch(Exception e) {
-			// NOP
-		}
 	}
 	
 	/**

@@ -16,7 +16,6 @@
  */
 package com.google.code.or.net;
 
-
 /**
  * 
  * @author Jingqi Xu
@@ -27,20 +26,20 @@ public interface Transport {
 	/**
 	 * 
 	 */
-	TransportContext getContext();
-	
-	TransportInputStream getInputStream();
-
-	TransportOutputStream getOutputStream();
-	
-	/**
-	 * 
-	 */
 	boolean isConnected();
 	
 	void disconnect() throws Exception;
 	
 	void connect(String host, int port) throws Exception;
+	
+	/**
+	 * 
+	 */
+	TransportContext getContext();
+	
+	TransportInputStream getInputStream();
+
+	TransportOutputStream getOutputStream();
 	
 	/**
 	 * 
