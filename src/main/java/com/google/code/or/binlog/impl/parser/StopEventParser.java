@@ -18,7 +18,8 @@ package com.google.code.or.binlog.impl.parser;
 
 import java.io.IOException;
 
-import com.google.code.or.binlog.ParserContext;
+import com.google.code.or.binlog.BinlogEventV4Header;
+import com.google.code.or.binlog.BinlogParsingContext;
 import com.google.code.or.binlog.impl.event.StopEvent;
 import com.google.code.or.io.XInputStream;
 
@@ -38,9 +39,9 @@ public class StopEventParser extends AbstractBinlogEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, ParserContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
 	throws IOException {
-		final StopEvent event = new StopEvent(context.getHeader());
+		final StopEvent event = new StopEvent(header);
 		context.getListener().onEvents(event);
 	}
 }

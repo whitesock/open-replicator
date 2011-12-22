@@ -18,7 +18,8 @@ package com.google.code.or.binlog.impl.parser;
 
 import java.io.IOException;
 
-import com.google.code.or.binlog.ParserContext;
+import com.google.code.or.binlog.BinlogEventV4Header;
+import com.google.code.or.binlog.BinlogParsingContext;
 import com.google.code.or.binlog.impl.event.IntvarEvent;
 import com.google.code.or.common.glossary.UnsignedLong;
 import com.google.code.or.io.XInputStream;
@@ -39,9 +40,9 @@ public class IntvarEventParser extends AbstractBinlogEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, ParserContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
 	throws IOException {
-		final IntvarEvent event = new IntvarEvent(context.getHeader());
+		final IntvarEvent event = new IntvarEvent(header);
 		event.setType(is.readInt(1));
 		event.setValue(UnsignedLong.valueOf(is.readLong(8)));
 		context.getListener().onEvents(event);

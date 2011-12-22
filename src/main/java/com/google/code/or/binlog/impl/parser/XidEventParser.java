@@ -18,7 +18,8 @@ package com.google.code.or.binlog.impl.parser;
 
 import java.io.IOException;
 
-import com.google.code.or.binlog.ParserContext;
+import com.google.code.or.binlog.BinlogEventV4Header;
+import com.google.code.or.binlog.BinlogParsingContext;
 import com.google.code.or.binlog.impl.event.XidEvent;
 import com.google.code.or.io.XInputStream;
 
@@ -44,9 +45,9 @@ public class XidEventParser extends AbstractBinlogEventParser {
 	 * in replication because the only important property of transaction numbers is that different 
 	 * transactions have different numbers (relative order does not matter). 
 	 */
-	public void parse(XInputStream is, ParserContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
 	throws IOException {
-		final XidEvent event = new XidEvent(context.getHeader());
+		final XidEvent event = new XidEvent(header);
 		event.setXid(is.readLong(8)); 
 		context.getListener().onEvents(event);
 	}

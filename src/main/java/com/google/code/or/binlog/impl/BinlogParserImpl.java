@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventParser;
 import com.google.code.or.binlog.BinlogEventV4;
+import com.google.code.or.binlog.BinlogParsingContext;
 import com.google.code.or.binlog.impl.event.BinlogEventV4HeaderImpl;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.io.XInputStream;
@@ -34,34 +35,17 @@ import com.google.code.or.io.XInputStream;
  * 
  * @author Jingqi Xu
  */
-public class BinlogParserImpl extends AbstractBinlogParser implements BinlogEventListener {
+public class BinlogParserImpl extends AbstractBinlogParser {
 	//
 	private static final Logger LOGGER = LoggerFactory.getLogger(BinlogParserImpl.class);
 	
 	//
-	protected Thread worker;
-	protected final Map<Long, TableMapEvent> tableMaps;
-	
+	private final Context context = new Context();
+
 	/**
 	 * 
 	 */
 	public BinlogParserImpl() {
-		this.tableMaps = new HashMap<Long, TableMapEvent>();
-	}
-	
-	/**
-	 * 
-	 */
-	public void onEvents(BinlogEventV4 event) {
-		//
-		if(event == null) return;
-		if(event instanceof TableMapEvent) {
-			final TableMapEvent tme = (TableMapEvent)event;
-			this.tableMaps.put(tme.getTableId(), tme);
-		}
-		
-		//
-		this.listener.onEvents(event);
 	}
 	
 	/**
@@ -91,15 +75,11 @@ public class BinlogParserImpl extends AbstractBinlogParser implements BinlogEven
 				header.setFlags(is.readInt(2));
 				
 				// Parse the event body
-				final Context context = new Context();
-				context.setHeader(header);
-				context.setListener(this);
-				context.setTableMaps(this.tableMaps);
 				final BinlogEventParser parser = getEventParser(header.getEventType());
 				if(parser != null) {
-					parser.parse(is, context);
+					parser.parse(is, header, context);
 				} else {
-					this.defaultEventParser.parse(is, context);
+					this.defaultEventParser.parse(is, header, context);
 				}
 				
 				// Enforce the packet boundary
@@ -109,6 +89,44 @@ public class BinlogParserImpl extends AbstractBinlogParser implements BinlogEven
 			} finally {
 				is.setReadLimit(0);
 			}
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private final class Context implements BinlogParsingContext, BinlogEventListener {
+		//
+		private Map<Long, TableMapEvent> tableMaps = new HashMap<Long, TableMapEvent>();
+		
+		/**
+		 * 
+		 */
+		public BinlogEventListener getListener() {
+			return this;
+		}
+
+		public TableMapEvent getTableMapEvent(long tableId) {
+			return this.tableMaps.get(tableId);
+		}
+		
+		/**
+		 * 
+		 */
+		public void onEvents(BinlogEventV4 event) {
+			//
+			if(event == null) {
+				return;
+			}
+			
+			//
+			if(event instanceof TableMapEvent) {
+				final TableMapEvent tme = (TableMapEvent)event;
+				this.tableMaps.put(tme.getTableId(), tme);
+			}
+			
+			//
+			BinlogParserImpl.this.listener.onEvents(event);
 		}
 	}
 }

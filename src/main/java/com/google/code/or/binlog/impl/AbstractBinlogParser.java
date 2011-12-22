@@ -18,19 +18,17 @@ package com.google.code.or.binlog.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventParser;
-import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.binlog.BinlogParser;
-import com.google.code.or.binlog.ParserContext;
-import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.parser.NopEventParser;
+import com.google.code.or.common.util.XThreadFactory;
 import com.google.code.or.io.XInputStream;
 
 /**
@@ -39,7 +37,11 @@ import com.google.code.or.io.XInputStream;
  */
 public abstract class AbstractBinlogParser implements BinlogParser {
 	//
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBinlogParser.class);
+	
+	//
 	protected Thread worker;
+	protected ThreadFactory threadFactory;
 	protected BinlogEventListener listener;
 	protected BinlogEventParser defaultEventParser;
 	protected final AtomicBoolean running = new AtomicBoolean(false);
@@ -55,27 +57,28 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	 */
 	public AbstractBinlogParser() {
 		this.defaultEventParser = new NopEventParser();
+		this.threadFactory = new XThreadFactory("parser", false);
 	}
 	
 	/**
 	 * 
 	 */
-	public final boolean isRunning() {
+	public boolean isRunning() {
 		return this.running.get();
 	}
 	
-	public final void start(XInputStream is) throws Exception {
+	public void start(XInputStream is) throws Exception {
 		//
 		if(this.running.compareAndSet(false, true)) {
 			return;
 		}
 		
 		//
-		this.worker = new Worker(is);
+		this.worker = this.threadFactory.newThread(new Task(is));
 		this.worker.start();
 	}
 
-	public final void stop() throws Exception {
+	public void stop() throws Exception {
 		//
 		if(this.running.compareAndSet(true, false)) {
 			return;
@@ -83,6 +86,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		
 		//
 		this.worker.join();
+		this.worker = null;
 	}
 
 	/**
@@ -94,6 +98,14 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	
 	public final void setVerbose(boolean verbose) {
 		this.verbose.set(verbose);
+	}
+	
+	public ThreadFactory getThreadFactory() {
+		return threadFactory;
+	}
+
+	public void setThreadFactory(ThreadFactory threadFactory) {
+		this.threadFactory = threadFactory;
 	}
 	
 	public BinlogEventListener getBinlogEventListener() {
@@ -148,14 +160,14 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	/**
 	 * 
 	 */
-	protected class Worker extends Thread {
+	protected final class Task implements Runnable {
 		//
 		private XInputStream is;
 		
 		/**
 		 * 
 		 */
-		public Worker(XInputStream is) {
+		public Task(XInputStream is) {
 			this.is = is;
 		}
 
@@ -166,57 +178,8 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 			try {
 				doParse(this.is);
 			} catch (Exception e) {
-				// TODO
+				LOGGER.error("failed to parse", e);
 			}
-		}
-	}
-	
-	protected final class Context implements ParserContext {
-		//
-		private BinlogEventV4Header header;
-		private BinlogEventListener listener;
-		private Map<Long, TableMapEvent> tableMaps;
-		
-		/**
-		 * 
-		 */
-		@Override
-		public String toString() {
-			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-			.append("header", header)
-			.append("listener", listener)
-			.append("tableMaps", tableMaps).toString();
-		}
-		
-		/**
-		 * 
-		 */
-		public BinlogEventV4Header getHeader() {
-			return header;
-		}
-
-		public void setHeader(BinlogEventV4Header header) {
-			this.header = header;
-		}
-		
-		public BinlogEventListener getListener() {
-			return listener;
-		}
-
-		public void setListener(BinlogEventListener listener) {
-			this.listener = listener;
-		}
-		
-		public TableMapEvent getTableMapEvent(long tableId) {
-			return this.tableMaps.get(tableId);
-		}
-		
-		public Map<Long, TableMapEvent> getTableMaps() {
-			return tableMaps;
-		}
-
-		public void setTableMaps(Map<Long, TableMapEvent> tableMaps) {
-			this.tableMaps = tableMaps;
 		}
 	}
 }

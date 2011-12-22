@@ -18,7 +18,8 @@ package com.google.code.or.binlog.impl.parser;
 
 import java.io.IOException;
 
-import com.google.code.or.binlog.ParserContext;
+import com.google.code.or.binlog.BinlogEventV4Header;
+import com.google.code.or.binlog.BinlogParsingContext;
 import com.google.code.or.binlog.impl.event.RandEvent;
 import com.google.code.or.io.XInputStream;
 
@@ -38,9 +39,9 @@ public class RandEventParser extends AbstractBinlogEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, ParserContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
 	throws IOException {
-		final RandEvent event = new RandEvent(context.getHeader());
+		final RandEvent event = new RandEvent(header);
 		event.setRandSeed1(is.readLong(8));
 		event.setRandSeed2(is.readLong(8));
 		context.getListener().onEvents(event);

@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.google.code.or.binlog.ParserContext;
+import com.google.code.or.binlog.BinlogEventV4Header;
+import com.google.code.or.binlog.BinlogParsingContext;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.event.UpdateRowsEvent;
 import com.google.code.or.common.glossary.Pair;
@@ -43,7 +44,7 @@ public class UpdateRowsEventParser extends AbstractRowEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, ParserContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
 	throws IOException {
 		//
 		final long tableId = is.readLong(6);
@@ -54,7 +55,7 @@ public class UpdateRowsEventParser extends AbstractRowEventParser {
 		}
 		
 		//
-		final UpdateRowsEvent event = new UpdateRowsEvent(context.getHeader());
+		final UpdateRowsEvent event = new UpdateRowsEvent(header);
 		event.setTableId(tableId);
 		event.setReserved(is.readInt(2));
 		event.setColumnCount(is.readUnsignedLong()); 

@@ -22,9 +22,7 @@ import com.google.code.or.binlog.impl.event.TableMapEvent;
  * 
  * @author Jingqi Xu
  */
-public interface ParserContext {
-	
-	BinlogEventV4Header getHeader();
+public interface BinlogParsingContext {
 	
 	BinlogEventListener getListener();
 	

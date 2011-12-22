@@ -28,5 +28,5 @@ public interface BinlogEventParser {
 	
 	int getEventType();
 	
-	void parse(XInputStream is, ParserContext context) throws IOException;
+	void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context) throws IOException;
 }

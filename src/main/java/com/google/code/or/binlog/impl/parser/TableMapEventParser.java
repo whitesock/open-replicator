@@ -18,7 +18,8 @@ package com.google.code.or.binlog.impl.parser;
 
 import java.io.IOException;
 
-import com.google.code.or.binlog.ParserContext;
+import com.google.code.or.binlog.BinlogEventV4Header;
+import com.google.code.or.binlog.BinlogParsingContext;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.common.glossary.Metadata;
 import com.google.code.or.io.XInputStream;
@@ -52,20 +53,20 @@ public class TableMapEventParser extends AbstractBinlogEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, ParserContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
 	throws IOException {
 		//
 		final long tableId = is.readLong(6);
 		if(this.reusePreviousEvent && context.getTableMapEvent(tableId) != null) {
 			is.skip(is.available());
 			final TableMapEvent event = context.getTableMapEvent(tableId).copy();
-			event.setHeader(context.getHeader());
+			event.setHeader(header);
 			context.getListener().onEvents(event);
 			return;
 		}
 		
 		//
-		final TableMapEvent event = new TableMapEvent(context.getHeader());
+		final TableMapEvent event = new TableMapEvent(header);
 		event.setTableId(tableId);
 		event.setReserved(is.readInt(2));
 		event.setDatabaseNameLength(is.readInt(1));
