@@ -36,9 +36,9 @@ import com.google.code.or.net.impl.packet.GreetingPacket;
  * 
  * @author Jingqi Xu
  */
-public class TransportImpl extends AbstractTransport {
+public class ReplicationTransport extends AbstractTransport {
 	//
-	private static final Logger LOGGER = LoggerFactory.getLogger(TransportImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationTransport.class);
 	
 	//
 	protected Socket socket;

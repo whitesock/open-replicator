@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.code.or.binlog.ParserContext;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.event.WriteRowsEvent;
@@ -34,8 +31,6 @@ import com.google.code.or.io.XInputStream;
  * @author Jingqi Xu
  */
 public class WriteRowsEventParser extends AbstractRowEventParser {
-	//
-	private static final Logger LOGGER = LoggerFactory.getLogger(WriteRowsEventParser.class);
 
 	/**
 	 * 
@@ -52,11 +47,10 @@ public class WriteRowsEventParser extends AbstractRowEventParser {
 		//
 		final long tableId = is.readLong(6);
 		final TableMapEvent tme = context.getTableMapEvent(tableId);
-		if(tme == null) {
-			LOGGER.warn("failed to get TableMapEvent, table id: " + tableId);
+		if(this.filter != null && !this.filter.accepts(tableId, tme)) {
 			is.skip(is.available());
 			return;
-		} 
+		}
 		
 		//
 		final WriteRowsEvent event = new WriteRowsEvent(context.getHeader());

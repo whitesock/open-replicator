@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.code.or.binlog.BinlogRowEventFilter;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.common.glossary.Column;
 import com.google.code.or.common.glossary.Metadata;
@@ -54,12 +57,29 @@ import com.google.code.or.io.XInputStream;
  * @author Jingqi Xu
  */
 public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
+	//
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRowEventParser.class);
+	
+	//
+	protected BinlogRowEventFilter filter;
 	
 	/**
 	 * 
 	 */
 	public AbstractRowEventParser(int eventType) {
 		super(eventType);
+		this.filter = new DefaultRowEventFilter();
+	}
+	
+	/**
+	 * 
+	 */
+	public BinlogRowEventFilter getFilter() {
+		return filter;
+	}
+
+	public void setFilter(BinlogRowEventFilter filter) {
+		this.filter = filter;
 	}
 	
 	/**
@@ -149,5 +169,22 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 			}
 		}
 		return new Row(columns);
+	}
+
+	/**
+	 * 
+	 */
+	public static class DefaultRowEventFilter implements BinlogRowEventFilter {
+
+		public boolean accepts(long tableId, TableMapEvent event) {
+			//
+			if(event == null) {
+				LOGGER.warn("failed to find TableMapEvent by tableId: {}", tableId);
+				return false;
+			}
+			
+			//
+			return true;
+		}
 	}
 }
