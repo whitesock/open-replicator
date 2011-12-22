@@ -86,8 +86,13 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 		try {
 			this.is.close();
 		} finally {
-			this.bufferNotFull.signalAll();
-			this.bufferNotEmpty.signalAll();
+			this.lock.lock();
+			try {
+				this.bufferNotFull.signalAll();
+				this.bufferNotEmpty.signalAll();
+			} finally {
+	        	this.lock.unlock();
+	        }
 		}
 	}
 	
@@ -119,6 +124,7 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
         	while (this.ringBuffer.isEmpty()) {
         		if(this.exception != null) throw this.exception;
             	this.bufferNotEmpty.awaitUninterruptibly();
+            	System.out.println("got it b");
             	if(this.closed.get()) throw new EOFException();
             }
             
