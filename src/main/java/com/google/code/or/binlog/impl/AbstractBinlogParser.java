@@ -162,7 +162,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	 */
 	protected final class Task implements Runnable {
 		//
-		private XInputStream is;
+		private final XInputStream is;
 		
 		/**
 		 * 
@@ -178,7 +178,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 			try {
 				doParse(this.is);
 			} catch (Exception e) {
-				LOGGER.error("failed to parse", e); // TODO
+				LOGGER.error("failed to parse binlog", e);
 			}
 		}
 	}
