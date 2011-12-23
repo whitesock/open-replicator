@@ -66,7 +66,7 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 		this.worker.setDaemon(true);
 		this.worker.start();
 	}
-
+	
 	/**
 	 * 
 	 */
