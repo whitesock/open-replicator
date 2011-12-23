@@ -63,7 +63,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	/**
 	 * 
 	 */
-	public boolean isRunning() {
+	public final boolean isRunning() {
 		return this.running.get();
 	}
 	
@@ -74,7 +74,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		}
 		
 		//
-		this.worker = this.threadFactory.newThread(new Task(is));
+		this.worker = this.threadFactory.newThread(new ParserTask(is));
 		this.worker.start();
 	}
 
@@ -160,14 +160,14 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	/**
 	 * 
 	 */
-	protected final class Task implements Runnable {
+	protected final class ParserTask implements Runnable {
 		//
 		private final XInputStream is;
 		
 		/**
 		 * 
 		 */
-		public Task(XInputStream is) {
+		public ParserTask(XInputStream is) {
 			this.is = is;
 		}
 

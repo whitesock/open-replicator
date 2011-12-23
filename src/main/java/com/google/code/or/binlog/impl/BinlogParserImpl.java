@@ -77,9 +77,9 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 				// Parse the event body
 				final BinlogEventParser parser = getEventParser(header.getEventType());
 				if(parser != null) {
-					parser.parse(is, header, context);
+					parser.parse(is, header, this.context);
 				} else {
-					this.defaultEventParser.parse(is, header, context);
+					this.defaultEventParser.parse(is, header, this.context);
 				}
 				
 				// Ensure the packet boundary
