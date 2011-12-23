@@ -79,7 +79,7 @@ public class XInputStreamImpl extends InputStream implements XInputStream {
 	
 	public byte[] readBytes(final int length) throws IOException {
 		final byte[] r = new byte[length];
-		this.read(r, 0, r.length);
+		this.read(r, 0, length);
 		return r;
 	}
 	
@@ -99,7 +99,7 @@ public class XInputStreamImpl extends InputStream implements XInputStream {
 	}
 	
 	public StringColumn readNullTerminatedString() throws IOException {
-		final XSerializer s = new XSerializer(128); // 
+		final XSerializer s = new XSerializer(128); // 128 should be OK for most schema names
 		while(true) {
 			final int v = this.read();
 			if(v == 0) break;
