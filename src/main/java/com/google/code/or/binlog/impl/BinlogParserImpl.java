@@ -30,6 +30,7 @@ import com.google.code.or.binlog.BinlogParsingContext;
 import com.google.code.or.binlog.impl.event.BinlogEventV4HeaderImpl;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.io.XInputStream;
+import com.google.code.or.net.impl.packet.OKPacket;
 
 /**
  * 
@@ -60,9 +61,11 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 				final int packetLength = is.readInt(3);
 				final int packetSequence = is.readInt(1);
 				is.setReadLimit(packetLength); // Ensure the packet boundary
-				is.skip(1);
-				if(isVerbose() && LOGGER.isInfoEnabled()) {
-					LOGGER.info("received a packet, length: {}, sequence: {}", packetLength, packetSequence);
+				
+				//
+				final int packetMarker = is.readInt(1); // 0x00
+				if(packetMarker != OKPacket.PACKET_MARKER) {
+					throw new NestableRuntimeException("assertion failed, invalid packet marker: " + packetMarker);
 				}
 				
 				// Parse the event header
@@ -73,6 +76,9 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 				header.setEventLength(is.readInt(4));
 				header.setNextPosition(is.readLong(4));
 				header.setFlags(is.readInt(2));
+				if(isVerbose() && LOGGER.isInfoEnabled()) {
+					LOGGER.info("received an event, sequence: {}, position: {}, length: {}", new Object[]{packetSequence, header.getPosition(), header.getEventLength()});
+				}
 				
 				// Parse the event body
 				final BinlogEventParser parser = getEventParser(header.getEventType());
