@@ -43,11 +43,11 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 	//
 	private final Thread worker;
 	private final InputStream is;
-	private final AtomicBoolean closed;
 	private volatile IOException exception;
 	private final ByteRingBuffer ringBuffer;
 	private final ThreadFactory threadFactory;
 	private final ReentrantLock lock = new ReentrantLock(false);
+	private final AtomicBoolean closed = new AtomicBoolean(false);
 	private final Condition bufferNotFull = this.lock.newCondition();
 	private final Condition bufferNotEmpty = this.lock.newCondition();
 	
@@ -67,12 +67,37 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 		//
 		this.is = is;
 		this.threadFactory = tf;
-		this.closed = new AtomicBoolean(false);
 		this.ringBuffer = new ByteRingBuffer(size);
 		
 		//
 		this.worker = this.threadFactory.newThread(this);
 		this.worker.start();
+	}
+	
+	/**
+	 * 
+	 */
+	public void run() {
+		try {
+			final byte[] buffer = new byte[32 * 1024];
+			while(!this.closed.get()) {
+				//
+				int r = this.is.read(buffer, 0, buffer.length);
+				if(r < 0) throw new EOFException();
+				
+				//
+				int offset = 0;
+				while(r > 0) {
+					final int w = write(buffer, offset, r);
+					r -= w;
+					offset += w;
+				}
+			}
+		} catch(IOException e) {
+			this.exception = e;
+		} catch(Exception e) {
+			LOGGER.error("failed to transfer data", e);
+		}
 	}
 	
 	/**
@@ -165,34 +190,6 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 	/**
 	 * 
 	 */
-	public void run() {
-		try {
-			final byte[] buffer = new byte[8 * 1024];
-			while(!closed.get()) {
-				//
-				int r = is.read(buffer, 0, buffer.length);
-				if(r < 0) {
-					throw new EOFException();
-				}
-				
-				//
-				int offset = 0;
-				while(r > 0) {
-					final int w = write(buffer, offset, r);
-					r -= w;
-					offset += w;
-				}
-			}
-		} catch(IOException e) {
-			this.exception = e;
-		} catch(Exception e) {
-			LOGGER.error("failed to read", e);
-		}
-	}
-	
-	/**
-	 * 
-	 */
 	private final class ByteRingBuffer {
 		//
 		private int size;
@@ -270,9 +267,7 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 		 * 
 		 */
 		private int wrap(int index) {
-			while(index >= this.buffer.length) {
-				index -= this.buffer.length;
-			}
+			while(index >= this.buffer.length) index -= this.buffer.length;
 			return index;
 		}
 	}
