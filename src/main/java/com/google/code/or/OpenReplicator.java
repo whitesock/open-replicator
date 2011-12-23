@@ -65,6 +65,7 @@ public class OpenReplicator {
 	protected String encoding = "utf-8";
 	protected int level1BufferSize = 1024 * 1024;
 	protected int level2BufferSize = 8 * 1024 * 1024;
+	protected int socketReceiveBufferSize = 1024 * 1024;
 	
 	//
 	protected Transport transport;
@@ -191,6 +192,14 @@ public class OpenReplicator {
 	public void setLevel2BufferSize(int level2BufferSize) {
 		this.level2BufferSize = level2BufferSize;
 	}
+	
+	public int getSocketReceiveBufferSize() {
+		return socketReceiveBufferSize;
+	}
+
+	public void setSocketReceiveBufferSize(int socketReceiveBufferSize) {
+		this.socketReceiveBufferSize = socketReceiveBufferSize;
+	}
 
 	/**
 	 * 
@@ -257,7 +266,7 @@ public class OpenReplicator {
 		final SocketFactoryImpl socketFactory = new SocketFactoryImpl();
 		socketFactory.setKeepAlive(true);
 		socketFactory.setTcpNoDelay(false);
-		socketFactory.setReceiveBufferSize(512 * 1024);
+		socketFactory.setReceiveBufferSize(this.socketReceiveBufferSize);
 		r.setSocketFactory(socketFactory);
 		return r;
 	}
@@ -295,7 +304,7 @@ public class OpenReplicator {
 		or.setPort(3306);
 		or.setServerId(6789);
 		or.setBinlogPosition(4);
-		or.setBinlogFileName("mysql_bin.000033");
+		or.setBinlogFileName("mysql_bin.000031");
 		or.setBinlogEventListener(new BinlogEventListener() {
 			public void onEvents(BinlogEventV4 event) {
 				if(event instanceof XidEvent) {
