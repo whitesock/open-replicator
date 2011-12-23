@@ -57,7 +57,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	 */
 	public AbstractBinlogParser() {
 		this.defaultEventParser = new NopEventParser();
-		this.threadFactory = new XThreadFactory("parser", false);
+		this.threadFactory = new XThreadFactory("binlog-parser", false);
 	}
 	
 	/**

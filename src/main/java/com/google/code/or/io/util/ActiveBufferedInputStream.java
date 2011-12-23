@@ -19,12 +19,15 @@ package com.google.code.or.io.util;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.code.or.common.util.XThreadFactory;
 
 /**
  * 
@@ -43,6 +46,7 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 	private final AtomicBoolean closed;
 	private volatile IOException exception;
 	private final ByteRingBuffer ringBuffer;
+	private final ThreadFactory threadFactory;
 	private final ReentrantLock lock = new ReentrantLock(false);
 	private final Condition bufferNotFull = this.lock.newCondition();
 	private final Condition bufferNotEmpty = this.lock.newCondition();
@@ -56,14 +60,18 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 	}
 	
 	public ActiveBufferedInputStream(InputStream is, int size) {
+		this(is, size, new XThreadFactory("active-bis", true));
+	}
+	
+	public ActiveBufferedInputStream(InputStream is, int size, ThreadFactory tf) {
 		//
 		this.is = is;
+		this.threadFactory = tf;
 		this.closed = new AtomicBoolean(false);
 		this.ringBuffer = new ByteRingBuffer(size);
 		
 		//
-		this.worker = new Thread(this);
-		this.worker.setDaemon(true);
+		this.worker = this.threadFactory.newThread(this);
 		this.worker.start();
 	}
 	
