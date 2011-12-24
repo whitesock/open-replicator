@@ -17,6 +17,7 @@
 package com.google.code.or.binlog.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
@@ -26,9 +27,10 @@ import org.slf4j.LoggerFactory;
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventParser;
 import com.google.code.or.binlog.BinlogEventV4;
-import com.google.code.or.binlog.BinlogParsingContext;
+import com.google.code.or.binlog.BinlogParserContext;
 import com.google.code.or.binlog.impl.event.BinlogEventV4HeaderImpl;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
+import com.google.code.or.binlog.impl.parser.NopEventParser;
 import com.google.code.or.io.XInputStream;
 import com.google.code.or.net.impl.packet.OKPacket;
 
@@ -41,12 +43,46 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BinlogParserImpl.class);
 	
 	//
-	private final Context context = new Context();
+	protected final Context context;
+	protected final BinlogEventParser[] parsers;
+	protected final BinlogEventParser defaultParser;
 
 	/**
 	 * 
 	 */
 	public BinlogParserImpl() {
+		this.context = new Context();
+		this.parsers = new BinlogEventParser[128];
+		this.defaultParser = new NopEventParser();
+	}
+	
+	/**
+	 * 
+	 */
+	public BinlogEventParser getEventParser(int type) {
+		return this.parsers[type];
+	}
+	
+	public BinlogEventParser unregistgerEventParser(int type) {
+		return this.parsers[type] = null;
+	}
+	
+	public void registgerEventParser(BinlogEventParser parser) {
+		this.parsers[parser.getEventType()] = parser;
+	}
+	
+	public void setEventParsers(List<BinlogEventParser> parsers) {
+		//
+		for(int i = 0; i < this.parsers.length; i++) {
+			this.parsers[i] = null;
+		}
+		
+		// 
+		if(parsers != null)  {
+			for(BinlogEventParser parser : parsers) {
+				registgerEventParser(parser);
+			}
+		}
 	}
 	
 	/**
@@ -77,15 +113,16 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 				header.setNextPosition(is.readLong(4));
 				header.setFlags(is.readInt(2));
 				if(isVerbose() && LOGGER.isInfoEnabled()) {
-					LOGGER.info("received an event, sequence: {}, position: {}, length: {}", new Object[]{packetSequence, header.getPosition(), header.getEventLength()});
+					LOGGER.info("received an event, sequence: {}, header: {}", packetSequence, header);
 				}
 				
 				// Parse the event body
-				final BinlogEventParser parser = getEventParser(header.getEventType());
-				if(parser != null) {
-					parser.parse(is, header, this.context);
+				if(this.eventFilter != null && !this.eventFilter.accepts(header, this.context)) {
+					this.defaultParser.parse(is, header, this.context);
 				} else {
-					this.defaultEventParser.parse(is, header, this.context);
+					BinlogEventParser parser = getEventParser(header.getEventType());
+					if(parser == null) parser = this.defaultParser;
+					parser.parse(is, header, this.context);
 				}
 				
 				// Ensure the packet boundary
@@ -101,7 +138,7 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 	/**
 	 * 
 	 */
-	private final class Context implements BinlogParsingContext, BinlogEventListener {
+	protected class Context implements BinlogParserContext, BinlogEventListener {
 		//
 		private Map<Long, TableMapEvent> tableMaps = new HashMap<Long, TableMapEvent>();
 		
@@ -132,7 +169,7 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 			}
 			
 			//
-			BinlogParserImpl.this.listener.onEvents(event);
+			BinlogParserImpl.this.eventListener.onEvents(event);
 		}
 	}
 }

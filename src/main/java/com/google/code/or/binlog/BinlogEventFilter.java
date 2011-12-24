@@ -20,7 +20,7 @@ package com.google.code.or.binlog;
  * 
  * @author Jingqi Xu
  */
-public interface BinlogEventFilter<T> {
+public interface BinlogEventFilter {
 	
-	boolean accepts(BinlogEventV4Header header, T extra);
+	boolean accepts(BinlogEventV4Header header, BinlogParserContext context);
 }

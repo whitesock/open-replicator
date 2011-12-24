@@ -16,18 +16,15 @@
  */
 package com.google.code.or.binlog.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.code.or.binlog.BinlogEventFilter;
 import com.google.code.or.binlog.BinlogEventListener;
-import com.google.code.or.binlog.BinlogEventParser;
 import com.google.code.or.binlog.BinlogParser;
-import com.google.code.or.binlog.impl.parser.NopEventParser;
 import com.google.code.or.common.util.XThreadFactory;
 import com.google.code.or.io.XInputStream;
 
@@ -42,11 +39,10 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	//
 	protected Thread worker;
 	protected ThreadFactory threadFactory;
-	protected BinlogEventListener listener;
-	protected BinlogEventParser defaultEventParser;
+	protected BinlogEventFilter eventFilter;
+	protected BinlogEventListener eventListener;
 	protected final AtomicBoolean running = new AtomicBoolean(false);
 	protected final AtomicBoolean verbose = new AtomicBoolean(false);
-	protected final BinlogEventParser[] parsers = new BinlogEventParser[128];
 	
 	//
 	protected abstract void doParse(XInputStream is) throws Exception;
@@ -56,7 +52,6 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	 * 
 	 */
 	public AbstractBinlogParser() {
-		this.defaultEventParser = new NopEventParser();
 		this.threadFactory = new XThreadFactory("binlog-parser", false);
 	}
 	
@@ -108,53 +103,20 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		this.threadFactory = threadFactory;
 	}
 	
-	public BinlogEventListener getBinlogEventListener() {
-		return listener;
-	}
-	
-	public void setBinlogEventListener(BinlogEventListener listener) {
-		this.listener = listener;
-	}
-	
-	public BinlogEventParser getDefaultEventParser() {
-		return defaultEventParser;
+	public BinlogEventFilter getEventFilter() {
+		return eventFilter;
 	}
 
-	public void setDefaultEventParser(BinlogEventParser parser) {
-		this.defaultEventParser = parser;
+	public void setEventFilter(BinlogEventFilter eventFilter) {
+		this.eventFilter = eventFilter;
 	}
 	
-	public BinlogEventParser getEventParser(int eventType) {
-		return this.parsers[eventType];
+	public BinlogEventListener getEventListener() {
+		return eventListener;
 	}
 	
-	public void registgerEventParser(BinlogEventParser parser) {
-		this.parsers[parser.getEventType()] = parser;
-	}
-	
-	public BinlogEventParser unregistgerEventParser(int eventType) {
-		return this.parsers[eventType] = null;
-	}
-	
-	public List<BinlogEventParser> getEventParsers() {
-		final List<BinlogEventParser> r = new ArrayList<BinlogEventParser>();
-		for(int i = 0; i < this.parsers.length; i++) {
-			if(this.parsers[i] != null) r.add(this.parsers[i]);
-		}
-		return r;
-	}
-	
-	public void setEventParsers(List<BinlogEventParser> parsers) {
-		//
-		for(int i = 0; i < this.parsers.length; i++) {
-			this.parsers[i] = null;
-		}
-		
-		// 
-		if(parsers == null) return;
-		for(BinlogEventParser parser : parsers) {
-			this.parsers[parser.getEventType()] = parser;
-		}
+	public void setEventListener(BinlogEventListener eventListener) {
+		this.eventListener = eventListener;
 	}
 	
 	/**

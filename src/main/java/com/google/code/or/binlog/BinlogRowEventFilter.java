@@ -14,37 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.or.binlog.impl.parser;
+package com.google.code.or.binlog;
 
-import java.io.IOException;
-
-import com.google.code.or.binlog.BinlogEventV4Header;
-import com.google.code.or.binlog.BinlogParserContext;
-import com.google.code.or.binlog.impl.event.IntvarEvent;
-import com.google.code.or.common.glossary.UnsignedLong;
-import com.google.code.or.io.XInputStream;
+import com.google.code.or.binlog.impl.event.TableMapEvent;
 
 /**
  * 
  * @author Jingqi Xu
  */
-public class IntvarEventParser extends AbstractBinlogEventParser {
-
-	/**
-	 * 
-	 */
-	public IntvarEventParser() {
-		super(IntvarEvent.EVENT_TYPE);
-	}
-
-	/**
-	 * 
-	 */
-	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParserContext context)
-	throws IOException {
-		final IntvarEvent event = new IntvarEvent(header);
-		event.setType(is.readInt(1));
-		event.setValue(UnsignedLong.valueOf(is.readLong(8)));
-		context.getListener().onEvents(event);
-	}
+public interface BinlogRowEventFilter {
+	
+	boolean accepts(BinlogEventV4Header header, BinlogParserContext context, TableMapEvent event);
 }

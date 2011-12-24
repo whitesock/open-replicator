@@ -37,7 +37,11 @@ public interface BinlogParser {
 	/**
 	 * 
 	 */
-	BinlogEventListener getBinlogEventListener();
+	BinlogEventFilter getEventFilter();
 	
-	void setBinlogEventListener(BinlogEventListener listener);
+	void setEventFilter(BinlogEventFilter filter);
+	
+	BinlogEventListener getEventListener();
+	
+	void setEventListener(BinlogEventListener listener);
 }

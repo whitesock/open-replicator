@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import com.google.code.or.binlog.BinlogEventParser;
 import com.google.code.or.binlog.BinlogEventV4Header;
-import com.google.code.or.binlog.BinlogParsingContext;
+import com.google.code.or.binlog.BinlogParserContext;
 import com.google.code.or.io.XInputStream;
 
 /**
@@ -39,7 +39,7 @@ public final class NopEventParser implements BinlogEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParserContext context)
 	throws IOException {
 		final int available = is.available();
 		is.skip(available);

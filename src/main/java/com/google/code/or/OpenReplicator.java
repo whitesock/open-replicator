@@ -95,7 +95,7 @@ public class OpenReplicator {
 		
 		//
 		if(this.binlogParser == null) this.binlogParser = getDefaultBinlogParser();
-		this.binlogParser.setBinlogEventListener(this.binlogEventListener);
+		this.binlogParser.setEventListener(this.binlogEventListener);
 		this.binlogParser.start(this.transport.getInputStream());
 	}
 
@@ -216,16 +216,16 @@ public class OpenReplicator {
 		return binlogParser;
 	}
 
-	public void setBinlogParser(BinlogParser binlogParser) {
-		this.binlogParser = binlogParser;
+	public void setBinlogParser(BinlogParser parser) {
+		this.binlogParser = parser;
 	}
 	
 	public BinlogEventListener getBinlogEventListener() {
 		return binlogEventListener;
 	}
 
-	public void setBinlogEventListener(BinlogEventListener binlogEventListener) {
-		this.binlogEventListener = binlogEventListener;
+	public void setBinlogEventListener(BinlogEventListener listener) {
+		this.binlogEventListener = listener;
 	}
 
 	/**

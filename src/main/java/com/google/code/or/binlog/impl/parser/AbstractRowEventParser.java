@@ -22,8 +22,9 @@ import java.util.List;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
 
+import com.google.code.or.binlog.BinlogRowEventFilter;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
-import com.google.code.or.binlog.impl.filter.BinlogRowEventFilter;
+import com.google.code.or.binlog.impl.filter.DefaultBinlogRowEventFilter;
 import com.google.code.or.common.glossary.Column;
 import com.google.code.or.common.glossary.Metadata;
 import com.google.code.or.common.glossary.Row;
@@ -56,25 +57,25 @@ import com.google.code.or.io.XInputStream;
  */
 public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 	//
-	protected BinlogRowEventFilter filter;
+	protected BinlogRowEventFilter rowEventFilter;
 	
 	/**
 	 * 
 	 */
 	public AbstractRowEventParser(int eventType) {
 		super(eventType);
-		this.filter = new BinlogRowEventFilter();
+		this.rowEventFilter = new DefaultBinlogRowEventFilter();
 	}
 	
 	/**
 	 * 
 	 */
-	public BinlogRowEventFilter getFilter() {
-		return filter;
+	public BinlogRowEventFilter getRowEventFilter() {
+		return rowEventFilter;
 	}
 
-	public void setFilter(BinlogRowEventFilter filter) {
-		this.filter = filter;
+	public void setRowEventFilter(BinlogRowEventFilter filter) {
+		this.rowEventFilter = filter;
 	}
 	
 	/**

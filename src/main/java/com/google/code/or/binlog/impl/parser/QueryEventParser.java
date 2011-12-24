@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.code.or.binlog.BinlogEventV4Header;
-import com.google.code.or.binlog.BinlogParsingContext;
+import com.google.code.or.binlog.BinlogParserContext;
 import com.google.code.or.binlog.StatusVariable;
 import com.google.code.or.binlog.impl.event.QueryEvent;
 import com.google.code.or.binlog.impl.variable.status.QAutoIncrement;
@@ -60,7 +60,7 @@ public class QueryEventParser extends AbstractBinlogEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParserContext context)
 	throws IOException {
 		final QueryEvent event = new QueryEvent(header);
 		event.setThreadId(is.readLong(4));

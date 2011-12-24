@@ -14,34 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.code.or.binlog.impl.filter;
+package com.google.code.or.binlog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.code.or.binlog.BinlogEventFilter;
-import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 
 /**
  * 
  * @author Jingqi Xu
  */
-public class BinlogRowEventFilter implements BinlogEventFilter<TableMapEvent> {
-	//
-	private static final Logger LOGGER = LoggerFactory.getLogger(BinlogRowEventFilter.class);
+public interface BinlogParserContext {
 	
-	/**
-	 * 
-	 */
-	public boolean accepts(BinlogEventV4Header header, TableMapEvent event) {
-		//
-		if(event == null) {
-			LOGGER.warn("failed to find TableMapEvent, header: {}", header);
-			return false;
-		}
-		
-		//
-		return true;
-	}
+	BinlogEventListener getListener();
+	
+	TableMapEvent getTableMapEvent(long tableId);
 }

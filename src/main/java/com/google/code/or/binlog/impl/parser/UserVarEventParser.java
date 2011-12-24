@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.code.or.binlog.BinlogEventV4Header;
-import com.google.code.or.binlog.BinlogParsingContext;
+import com.google.code.or.binlog.BinlogParserContext;
 import com.google.code.or.binlog.UserVariable;
 import com.google.code.or.binlog.impl.event.UserVarEvent;
 import com.google.code.or.binlog.impl.variable.user.UserVariableDecimal;
@@ -50,7 +50,7 @@ public class UserVarEventParser extends AbstractBinlogEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParserContext context)
 	throws IOException {
 		final UserVarEvent event = new UserVarEvent(header);
 		event.setVarNameLength(is.readInt(4));

@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.code.or.binlog.BinlogEventV4Header;
-import com.google.code.or.binlog.BinlogParsingContext;
+import com.google.code.or.binlog.BinlogParserContext;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.event.WriteRowsEvent;
 import com.google.code.or.common.glossary.Row;
@@ -43,12 +43,12 @@ public class WriteRowsEventParser extends AbstractRowEventParser {
 	/**
 	 * 
 	 */
-	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParsingContext context)
+	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParserContext context)
 	throws IOException {
 		//
 		final long tableId = is.readLong(6);
 		final TableMapEvent tme = context.getTableMapEvent(tableId);
-		if(this.filter != null && !this.filter.accepts(header, tme)) {
+		if(this.rowEventFilter != null && !this.rowEventFilter.accepts(header, context, tme)) {
 			is.skip(is.available());
 			return;
 		}
