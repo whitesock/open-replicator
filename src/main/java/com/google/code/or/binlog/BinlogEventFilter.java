@@ -16,13 +16,11 @@
  */
 package com.google.code.or.binlog;
 
-import com.google.code.or.binlog.impl.event.TableMapEvent;
-
 /**
  * 
  * @author Jingqi Xu
  */
-public interface BinlogRowEventFilter {
+public interface BinlogEventFilter<T> {
 	
-	boolean accepts(BinlogEventV4Header header, TableMapEvent event);
+	boolean accepts(BinlogEventV4Header header, T extra);
 }
