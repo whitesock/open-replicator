@@ -25,8 +25,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public final class Pair<T> {
 	//
-	private T first;
-	private T second;
+	private T before;
+	private T after;
 	
 	/**
 	 * 
@@ -34,9 +34,9 @@ public final class Pair<T> {
 	public Pair() {
 	}
 	
-	public Pair(T first, T second) {
-		this.first = first;
-		this.second = second;
+	public Pair(T before, T after) {
+		this.before = before;
+		this.after = after;
 	}
 	
 	/**
@@ -44,36 +44,36 @@ public final class Pair<T> {
 	 */
 	public String toString() {
 		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-		.append("first", first)
-		.append("second", second).toString();
+		.append("before", before)
+		.append("after", after).toString();
 	}
 	
 	/**
 	 * 
 	 */
-	public T getFirst() {
-		return first;
+	public T getBefore() {
+		return before;
 	}
 
-	public void setFirst(T first) {
-		this.first = first;
+	public void setBefore(T before) {
+		this.before = before;
 	}
 	
-	public T getSecond() {
-		return second;
+	public T getAfter() {
+		return after;
 	}
 
-	public void setSecond(T second) {
-		this.second = second;
+	public void setAfter(T after) {
+		this.after = after;
 	}
 	
 	/**
 	 * 
 	 */
 	public void swap() {
-		final T backup = this.first;
-		this.first = this.second;
-		this.second = backup;
+		final T t = this.before;
+		this.before = this.after;
+		this.after = t;
 	}
 	
 	/**
@@ -85,9 +85,9 @@ public final class Pair<T> {
 	
 	private static <T> void doSwap(Pair<T> p) {
 		synchronized(p) {
-			final T backup = p.first;
-			p.first = p.second;
-			p.second = backup;
+			final T t = p.before;
+			p.before = p.after;
+			p.after = t;
 		}
 	}
 }
