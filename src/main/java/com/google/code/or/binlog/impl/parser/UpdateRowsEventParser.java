@@ -49,7 +49,7 @@ public class UpdateRowsEventParser extends AbstractRowEventParser {
 		//
 		final long tableId = is.readLong(6);
 		final TableMapEvent tme = context.getTableMapEvent(tableId);
-		if(this.filter != null && !this.filter.accepts(tableId, tme)) {
+		if(this.filter != null && !this.filter.accepts(header, tme)) {
 			is.skip(is.available());
 			return;
 		}

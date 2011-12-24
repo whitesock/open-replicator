@@ -24,5 +24,5 @@ import com.google.code.or.binlog.impl.event.TableMapEvent;
  */
 public interface BinlogRowEventFilter {
 	
-	boolean accepts(long tableId, TableMapEvent event);
+	boolean accepts(BinlogEventV4Header header, TableMapEvent event);
 }

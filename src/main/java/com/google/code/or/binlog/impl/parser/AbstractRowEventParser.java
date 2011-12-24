@@ -24,6 +24,7 @@ import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.binlog.BinlogRowEventFilter;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.common.glossary.Column;
@@ -176,10 +177,10 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 	 */
 	public static class DefaultFilter implements BinlogRowEventFilter {
 
-		public boolean accepts(long tableId, TableMapEvent event) {
+		public boolean accepts(BinlogEventV4Header header, TableMapEvent event) {
 			//
 			if(event == null) {
-				LOGGER.warn("failed to find TableMapEvent by tableId: {}", tableId);
+				LOGGER.warn("failed to find TableMapEvent, header: {}", header);
 				return false;
 			}
 			
