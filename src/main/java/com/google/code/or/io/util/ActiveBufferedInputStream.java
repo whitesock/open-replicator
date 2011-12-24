@@ -79,7 +79,7 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 	 */
 	public void run() {
 		try {
-			final byte[] buffer = new byte[32 * 1024];
+			final byte[] buffer = new byte[512 * 1024];
 			while(!this.closed.get()) {
 				//
 				int r = this.is.read(buffer, 0, buffer.length);
