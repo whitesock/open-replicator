@@ -150,7 +150,7 @@ public class Test {
 		parser.registgerEventParser(new DeleteRowsEventParser());
 		parser.registgerEventParser(new UpdateRowsEventParser());
 		parser.registgerEventParser(new FormatDescriptionEventParser());
-		parser.setBinlogEventListener(new BinlogEventListener() {
+		parser.setEventListener(new BinlogEventListener() {
 			public void onEvents(BinlogEventV4 event) {
 				if(event instanceof XidEvent) {
 					LOGGER.info("{}",  event);
