@@ -28,9 +28,23 @@ import com.google.code.or.binlog.impl.event.TableMapEvent;
  * 
  * @author Jingqi Xu
  */
-public class DefaultBinlogRowEventFilter implements BinlogRowEventFilter {
+public class BinlogRowEventFilterImpl implements BinlogRowEventFilter {
 	//
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBinlogRowEventFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(BinlogRowEventFilterImpl.class);
+	
+	//
+	private boolean verbose = true;
+	
+	/**
+	 * 
+	 */
+	public boolean isVerbose() {
+		return verbose;
+	}
+
+	public void setVerbose(boolean verbose) {
+		this.verbose = verbose;
+	}
 	
 	/**
 	 * 
@@ -38,7 +52,9 @@ public class DefaultBinlogRowEventFilter implements BinlogRowEventFilter {
 	public boolean accepts(BinlogEventV4Header header, BinlogParserContext context, TableMapEvent event) {
 		//
 		if(event == null) {
-			LOGGER.warn("failed to find TableMapEvent, header: {}", header);
+			if(isVerbose() && LOGGER.isWarnEnabled()) {
+				LOGGER.warn("failed to find TableMapEvent, header: {}", header);
+			}
 			return false;
 		}
 		
