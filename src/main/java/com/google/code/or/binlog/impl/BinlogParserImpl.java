@@ -43,18 +43,10 @@ public class BinlogParserImpl extends AbstractBinlogParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BinlogParserImpl.class);
 	
 	//
-	protected final Context context;
-	protected final BinlogEventParser[] parsers;
-	protected final BinlogEventParser defaultParser;
+	protected final Context context = new Context();
+	protected final BinlogEventParser defaultParser = new NopEventParser();
+	protected final BinlogEventParser[] parsers = new BinlogEventParser[128];
 
-	/**
-	 * 
-	 */
-	public BinlogParserImpl() {
-		this.context = new Context();
-		this.parsers = new BinlogEventParser[128];
-		this.defaultParser = new NopEventParser();
-	}
 	
 	/**
 	 * 
