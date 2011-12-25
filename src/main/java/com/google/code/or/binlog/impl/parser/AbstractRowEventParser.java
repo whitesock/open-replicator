@@ -81,12 +81,12 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 	/**
 	 * 
 	 */
-	protected Row parseRow(XInputStream tis, TableMapEvent tme, BitColumn usedColumns) 
+	protected Row parseRow(XInputStream is, TableMapEvent tme, BitColumn usedColumns) 
 	throws IOException {
 		//
 		final byte[] types = tme.getColumnTypes();
 		final Metadata metadata = tme.getColumnMetadata();
-		final BitColumn nullColumns = tis.readBit(types.length, true);
+		final BitColumn nullColumns = is.readBit(types.length, true);
 		final List<Column> columns = new ArrayList<Column>(types.length);
 		for(int i = 0; i < types.length; ++i) {
 			//
@@ -123,42 +123,42 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 			
 			//
 			switch(type) {
-			case MySQLConstants.TYPE_TINY: columns.add(TinyColumn.valueOf(tis.readInt(1))); break;
-			case MySQLConstants.TYPE_SHORT: columns.add(ShortColumn.valueOf(tis.readInt(2))); break;
-			case MySQLConstants.TYPE_INT24: columns.add(Int24Column.valueOf(tis.readInt(3))); break;
-			case MySQLConstants.TYPE_LONG: columns.add(LongColumn.valueOf(tis.readInt(4))); break;
-			case MySQLConstants.TYPE_LONGLONG: columns.add(LongLongColumn.valueOf(tis.readLong(8))); break;
-			case MySQLConstants.TYPE_FLOAT: columns.add(FloatColumn.valueOf(Float.intBitsToFloat(tis.readInt(4)))); break;
-			case MySQLConstants.TYPE_DOUBLE: columns.add(DoubleColumn.valueOf(Double.longBitsToDouble(tis.readLong(8)))); break;
-			case MySQLConstants.TYPE_YEAR: columns.add(YearColumn.valueOf(MySQLUtils.toYear(tis.readInt(1)))); break;
-			case MySQLConstants.TYPE_DATE: columns.add(DateColumn.valueOf(MySQLUtils.toDate(tis.readInt(3)))); break;
-			case MySQLConstants.TYPE_TIME: columns.add(TimeColumn.valueOf(MySQLUtils.toTime(tis.readInt(3)))); break;
-			case MySQLConstants.TYPE_TIMESTAMP: columns.add(TimestampColumn.valueOf(MySQLUtils.toTimestamp(tis.readLong(4)))); break;
-			case MySQLConstants.TYPE_DATETIME: columns.add(DatetimeColumn.valueOf(MySQLUtils.toDatetime(tis.readLong(8)))); break;
-			case MySQLConstants.TYPE_ENUM: columns.add(EnumColumn.valueOf(tis.readInt(length))); break;
-			case MySQLConstants.TYPE_SET: columns.add(SetColumn.valueOf(tis.readLong(length))); break;
+			case MySQLConstants.TYPE_TINY: columns.add(TinyColumn.valueOf(is.readInt(1))); break;
+			case MySQLConstants.TYPE_SHORT: columns.add(ShortColumn.valueOf(is.readInt(2))); break;
+			case MySQLConstants.TYPE_INT24: columns.add(Int24Column.valueOf(is.readInt(3))); break;
+			case MySQLConstants.TYPE_LONG: columns.add(LongColumn.valueOf(is.readInt(4))); break;
+			case MySQLConstants.TYPE_LONGLONG: columns.add(LongLongColumn.valueOf(is.readLong(8))); break;
+			case MySQLConstants.TYPE_FLOAT: columns.add(FloatColumn.valueOf(Float.intBitsToFloat(is.readInt(4)))); break;
+			case MySQLConstants.TYPE_DOUBLE: columns.add(DoubleColumn.valueOf(Double.longBitsToDouble(is.readLong(8)))); break;
+			case MySQLConstants.TYPE_YEAR: columns.add(YearColumn.valueOf(MySQLUtils.toYear(is.readInt(1)))); break;
+			case MySQLConstants.TYPE_DATE: columns.add(DateColumn.valueOf(MySQLUtils.toDate(is.readInt(3)))); break;
+			case MySQLConstants.TYPE_TIME: columns.add(TimeColumn.valueOf(MySQLUtils.toTime(is.readInt(3)))); break;
+			case MySQLConstants.TYPE_TIMESTAMP: columns.add(TimestampColumn.valueOf(MySQLUtils.toTimestamp(is.readLong(4)))); break;
+			case MySQLConstants.TYPE_DATETIME: columns.add(DatetimeColumn.valueOf(MySQLUtils.toDatetime(is.readLong(8)))); break;
+			case MySQLConstants.TYPE_ENUM: columns.add(EnumColumn.valueOf(is.readInt(length))); break;
+			case MySQLConstants.TYPE_SET: columns.add(SetColumn.valueOf(is.readLong(length))); break;
 			case MySQLConstants.TYPE_STRING:
-				final int stringLength = length < 256 ? tis.readInt(1) : tis.readInt(2);
-				columns.add(tis.readFixedLengthString(stringLength));
+				final int stringLength = length < 256 ? is.readInt(1) : is.readInt(2);
+				columns.add(is.readFixedLengthString(stringLength));
 				break;
 			case MySQLConstants.TYPE_BIT: 
 				final int bitLength = (meta >> 8) * 8 + (meta & 0xFF);
-				columns.add(tis.readBit(bitLength, false));
+				columns.add(is.readBit(bitLength, false));
 				break;
 			case MySQLConstants.TYPE_NEWDECIMAL:
 				final int precision = meta & 0xFF;
 		        final int scale = meta >> 8;
 		        final int decimalLength = MySQLUtils.getDecimalBinarySize(precision, scale);
-		        columns.add(DecimalColumn.valueOf(MySQLUtils.toDecimal(precision, scale, tis.readBytes(decimalLength)), precision, scale));
+		        columns.add(DecimalColumn.valueOf(MySQLUtils.toDecimal(precision, scale, is.readBytes(decimalLength)), precision, scale));
 				break;
 			case MySQLConstants.TYPE_BLOB:
-				final int blobLength = tis.readInt(meta);
-				columns.add(BlobColumn.valueOf(tis.readBytes(blobLength)));
+				final int blobLength = is.readInt(meta);
+				columns.add(BlobColumn.valueOf(is.readBytes(blobLength)));
 				break;
 			case MySQLConstants.TYPE_VARCHAR:
 			case MySQLConstants.TYPE_VAR_STRING:
-				final int varcharLength = meta < 256 ? tis.readInt(1) : tis.readInt(2);
-				columns.add(tis.readFixedLengthString(varcharLength));
+				final int varcharLength = meta < 256 ? is.readInt(1) : is.readInt(2);
+				columns.add(is.readFixedLengthString(varcharLength));
 				break;
 			default:
 				throw new NestableRuntimeException("assertion failed, unknown column type: " + type);
