@@ -62,7 +62,7 @@ public class UpdateRowsEventParser extends AbstractRowEventParser {
 		event.setUsedColumnsBefore(is.readBit(event.getColumnCount().intValue(), true));
 		event.setUsedColumnsAfter(is.readBit(event.getColumnCount().intValue(), true));
 		event.setRows(parseRows(is, tme, event));
-		context.getListener().onEvents(event);
+		context.getEventListener().onEvents(event);
 	}
 	
 	/**

@@ -47,6 +47,6 @@ public class FormatDescriptionEventParser extends AbstractBinlogEventParser {
 		event.setCreateTimestamp(is.readLong(4) * 1000L);
 		event.setHeaderLength(is.readInt(1));
 		event.setEventTypes(is.readBytes(is.available()));
-		context.getListener().onEvents(event);
+		context.getEventListener().onEvents(event);
 	}
 }

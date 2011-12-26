@@ -60,7 +60,7 @@ public class DeleteRowsEventParser extends AbstractRowEventParser {
 		event.setColumnCount(is.readUnsignedLong()); 
 		event.setUsedColumns(is.readBit(event.getColumnCount().intValue(), true));
 		event.setRows(parseRows(is, tme, event));
-		context.getListener().onEvents(event);
+		context.getEventListener().onEvents(event);
 	}
 	
 	/**

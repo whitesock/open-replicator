@@ -44,6 +44,6 @@ public class RotateEventParser extends AbstractBinlogEventParser {
 		final RotateEvent event = new RotateEvent(header);
 		event.setBinlogPosition(is.readLong(8));
 		event.setBinlogFileName(is.readFixedLengthString(is.available()));
-		context.getListener().onEvents(event);
+		context.getEventListener().onEvents(event);
 	}
 }

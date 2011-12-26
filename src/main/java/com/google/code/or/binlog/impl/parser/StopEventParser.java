@@ -42,6 +42,6 @@ public class StopEventParser extends AbstractBinlogEventParser {
 	public void parse(XInputStream is, BinlogEventV4Header header, BinlogParserContext context)
 	throws IOException {
 		final StopEvent event = new StopEvent(header);
-		context.getListener().onEvents(event);
+		context.getEventListener().onEvents(event);
 	}
 }

@@ -32,6 +32,7 @@ import com.google.code.or.binlog.BinlogEventParser;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.BinlogParser;
 import com.google.code.or.binlog.BinlogParserContext;
+import com.google.code.or.binlog.impl.event.RotateEvent;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.parser.NopEventParser;
 import com.google.code.or.common.util.XThreadFactory;
@@ -182,12 +183,31 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	
 	protected class Context implements BinlogParserContext, BinlogEventListener {
 		//
+		private String binlogFileName;
 		private final Map<Long, TableMapEvent> tableMaps = new HashMap<Long, TableMapEvent>();
+
+		/**
+		 * 
+		 */
+		public Context() {
+		}
+		
+		public Context(String binlogFileName) {
+			this.binlogFileName = binlogFileName;
+		}
 		
 		/**
 		 * 
 		 */
-		public BinlogEventListener getListener() {
+		public String getBinlogFileName() {
+			return binlogFileName;
+		}
+
+		public void setBinlogFileName(String name) {
+			this.binlogFileName = name;
+		}
+		
+		public BinlogEventListener getEventListener() {
 			return this;
 		}
 
@@ -208,6 +228,9 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 			if(event instanceof TableMapEvent) {
 				final TableMapEvent tme = (TableMapEvent)event;
 				this.tableMaps.put(tme.getTableId(), tme);
+			} else if(event instanceof RotateEvent) {
+				final RotateEvent re = (RotateEvent)event;
+				this.binlogFileName = re.getBinlogFileName().toString();
 			}
 			
 			//

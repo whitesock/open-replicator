@@ -24,7 +24,9 @@ import com.google.code.or.binlog.impl.event.TableMapEvent;
  */
 public interface BinlogParserContext {
 	
-	BinlogEventListener getListener();
+	String getBinlogFileName();
+	
+	BinlogEventListener getEventListener();
 	
 	TableMapEvent getTableMapEvent(long tableId);
 }

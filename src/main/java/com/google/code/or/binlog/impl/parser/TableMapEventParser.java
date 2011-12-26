@@ -61,7 +61,7 @@ public class TableMapEventParser extends AbstractBinlogEventParser {
 			is.skip(is.available());
 			final TableMapEvent event = context.getTableMapEvent(tableId).copy();
 			event.setHeader(header);
-			context.getListener().onEvents(event);
+			context.getEventListener().onEvents(event);
 			return;
 		}
 		
@@ -78,6 +78,6 @@ public class TableMapEventParser extends AbstractBinlogEventParser {
 		event.setColumnMetadataCount(is.readUnsignedLong()); 
 		event.setColumnMetadata(Metadata.valueOf(event.getColumnTypes(), is.readBytes(event.getColumnMetadataCount().intValue())));
 		event.setColumnNullabilities(is.readBit(event.getColumnCount().intValue(), true));
-		context.getListener().onEvents(event);
+		context.getEventListener().onEvents(event);
 	}
 }

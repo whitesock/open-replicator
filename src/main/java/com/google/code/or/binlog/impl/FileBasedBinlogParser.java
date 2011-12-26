@@ -94,7 +94,7 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 	@Override
 	protected void parse() throws Exception {
 		//
-		final Context context = new Context();
+		final Context context = new Context(this.binlogFileName);
 		final XInputStream is = open(this.binlogFilePath + "/" +  this.binlogFileName);
 		while(isRunning() && is.available() > 0) {
 			try {

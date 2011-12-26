@@ -45,6 +45,6 @@ public class IncidentEventParser extends AbstractBinlogEventParser {
 		event.setIncidentNumber(is.readInt(1));
 		event.setMessageLength(is.readInt(1));
 		if(event.getMessageLength() > 0) event.setMessage(is.readFixedLengthString(event.getMessageLength()));
-		context.getListener().onEvents(event);
+		context.getEventListener().onEvents(event);
 	}
 }

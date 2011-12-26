@@ -49,6 +49,6 @@ public class XidEventParser extends AbstractBinlogEventParser {
 	throws IOException {
 		final XidEvent event = new XidEvent(header);
 		event.setXid(is.readLong(8)); 
-		context.getListener().onEvents(event);
+		context.getEventListener().onEvents(event);
 	}
 }
