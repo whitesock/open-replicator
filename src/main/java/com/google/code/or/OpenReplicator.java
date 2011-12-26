@@ -55,8 +55,8 @@ public class OpenReplicator {
 	protected String user;
 	protected String password;
 	protected int serverId = 6789;
-	protected int binlogPosition = 4;
 	protected String binlogFileName;
+	protected long binlogPosition = 4;
 	protected String encoding = "utf-8";
 	protected int level1BufferSize = 1024 * 1024;
 	protected int level2BufferSize = 8 * 1024 * 1024;
@@ -156,11 +156,11 @@ public class OpenReplicator {
 		this.serverId = serverId;
 	}
 	
-	public int getBinlogPosition() {
+	public long getBinlogPosition() {
 		return binlogPosition;
 	}
 
-	public void setBinlogPosition(int binlogPosition) {
+	public void setBinlogPosition(long binlogPosition) {
 		this.binlogPosition = binlogPosition;
 	}
 	
