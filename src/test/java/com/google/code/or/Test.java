@@ -50,7 +50,7 @@ public class Test {
 	public static void parseBinlog() throws Exception {
 		//
 		final OpenParser op = new OpenParser();
-		op.setStartPosition(4);
+		op.setStartPosition(307);
 		op.setBinlogFileName("mysql_bin.000050");
 		op.setBinlogFilePath("C:/Documents and Settings/All Users/Application Data/MySQL/MySQL Server 5.5/data");
 		op.setBinlogEventListener(new BinlogEventListener() {
