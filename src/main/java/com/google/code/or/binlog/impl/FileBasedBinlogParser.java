@@ -16,14 +16,20 @@
  */
 package com.google.code.or.binlog.impl;
 
+import java.io.RandomAccessFile;
+
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.code.or.binlog.BinlogEventParser;
 import com.google.code.or.binlog.impl.event.BinlogEventV4HeaderImpl;
+import com.google.code.or.common.util.CodecUtils;
+import com.google.code.or.common.util.IOUtils;
 import com.google.code.or.common.util.MySQLConstants;
 import com.google.code.or.io.XInputStream;
+import com.google.code.or.io.impl.XInputStreamImpl;
+import com.google.code.or.io.util.RamdomAccessFileInputStream;
 
 /**
  * 
@@ -34,40 +40,62 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileBasedBinlogParser.class);
 	
 	//
-	protected long startPosition = 4;
-	protected long stopPosition = -1;
+	protected long stopPosition;
+	protected long startPosition;
+	protected String binlogFileName;
+	protected String binlogFilePath;
+
+	/**
+	 * 
+	 */
+	public FileBasedBinlogParser() {
+		this.stopPosition = 0;
+		this.startPosition = 4;
+	}
 	
 	/**
 	 * 
 	 */
+	public long getStopPosition() {
+		return stopPosition;
+	}
+	
+	public void setStopPosition(long position) {
+		this.stopPosition = position;
+	}
+	
 	public long getStartPosition() {
 		return startPosition;
 	}
 
-	public void setStartPosition(long startPosition) {
-		this.startPosition = startPosition;
+	public void setStartPosition(long position) {
+		this.startPosition = position;
 	}
 
-	public long getStopPosition() {
-		return stopPosition;
+	public String getBinlogFileName() {
+		return binlogFileName;
+	}
+	
+	public void setBinlogFileName(String name) {
+		this.binlogFileName = name;
 	}
 
-	public void setStopPosition(long stopPosition) {
-		this.stopPosition = stopPosition;
+	public String getBinlogFilePath() {
+		return binlogFilePath;
+	}
+
+	public void setBinlogFilePath(String path) {
+		this.binlogFilePath = path;
 	}
 	
 	/**
 	 * 
 	 */
 	@Override
-	protected void parse(XInputStream is) throws Exception {
+	protected void parse() throws Exception {
 		//
-		final int length = checkBinlogMagic(is);
-		
-		//
-		is.skip(this.startPosition - length); // TODO
-		
-		//
+		final Context context = new Context();
+		final XInputStream is = open(this.binlogFilePath + "/" +  this.binlogFileName);
 		while(isRunning() && is.available() > 0) {
 			try {
 				//
@@ -80,7 +108,7 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 				header.setFlags(is.readInt(2));
 				is.setReadLimit((int)(header.getEventLength() - header.getHeaderLength())); // Ensure the event boundary
 				if(isVerbose() && LOGGER.isInfoEnabled()) {
-					LOGGER.info("received an event, header: {}", header);
+					LOGGER.info("read an event, header: {}", header);
 				}
 				
 				//
@@ -89,36 +117,46 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 				}
 				
 				// Parse the event body
-				if(this.eventFilter != null && !this.eventFilter.accepts(header, this.context)) {
-					this.defaultParser.parse(is, header, this.context);
+				if(this.eventFilter != null && !this.eventFilter.accepts(header, context)) {
+					this.defaultParser.parse(is, header, context);
 				} else {
 					BinlogEventParser parser = getEventParser(header.getEventType());
 					if(parser == null) parser = this.defaultParser;
-					parser.parse(is, header, this.context);
+					parser.parse(is, header, context);
 				}
 				
 				// Ensure the packet boundary
 				if(is.available() != 0) {
 					throw new NestableRuntimeException("assertion failed, available: " + is.available() + ", event type: " + header.getEventType());
 				}
+			} catch(Exception e) {
+				IOUtils.closeQuietly(is);
+				throw e;
 			} finally {
 				is.setReadLimit(0);
 			}
 		}
 	}
 
-	/**
-	 * 
-	 */
-	protected int checkBinlogMagic(XInputStream is) throws Exception {
+	private XInputStream open(String path) throws Exception {
 		//
-		final int length = MySQLConstants.BINLOG_MAGIC.length;
-		final byte[] magic = is.readBytes(length);
-		for(int i = 0; i < length; i++) {
-			if(magic[i] != MySQLConstants.BINLOG_MAGIC[i]) {
-				throw new NestableRuntimeException("assertion failed, invalid magic: " + magic);
+		final RandomAccessFile file = new RandomAccessFile(path, "r");
+		final XInputStream is = new XInputStreamImpl(new RamdomAccessFileInputStream(file));
+		try {
+			// Check binlog magic
+			final byte[] magic = is.readBytes(MySQLConstants.BINLOG_MAGIC.length);
+			if(!CodecUtils.equals(magic, MySQLConstants.BINLOG_MAGIC)) {
+				throw new NestableRuntimeException("invalid binlog magic, file: " + path);
 			}
+			
+			//
+			if(this.startPosition > MySQLConstants.BINLOG_MAGIC.length) {
+				is.skip(this.startPosition - MySQLConstants.BINLOG_MAGIC.length);
+			}
+			return is;
+		} catch(Exception e) {
+			IOUtils.closeQuietly(is);
+			throw e;
 		}
-		return length;
 	}
 }

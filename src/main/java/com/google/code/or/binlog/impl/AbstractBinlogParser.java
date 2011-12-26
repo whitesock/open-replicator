@@ -35,7 +35,6 @@ import com.google.code.or.binlog.BinlogParserContext;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.parser.NopEventParser;
 import com.google.code.or.common.util.XThreadFactory;
-import com.google.code.or.io.XInputStream;
 
 /**
  * 
@@ -50,15 +49,14 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	protected ThreadFactory threadFactory;
 	protected BinlogEventFilter eventFilter;
 	protected BinlogEventListener eventListener;
-	protected final Context context = new Context();
 	protected final AtomicBoolean verbose = new AtomicBoolean(false);
 	protected final AtomicBoolean running = new AtomicBoolean(false);
 	protected final BinlogEventParser defaultParser = new NopEventParser();
 	protected final BinlogEventParser[] parsers = new BinlogEventParser[128];
 	
 	//
-	protected abstract void parse(XInputStream is) throws Exception;
-
+	protected abstract void parse() throws Exception;
+	
 	
 	/**
 	 * 
@@ -74,15 +72,15 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		return this.running.get();
 	}
 	
-	public void start(XInputStream is) throws Exception {
+	public void start() throws Exception {
 		//
 		if(!this.running.compareAndSet(false, true)) {
 			return;
 		}
 		
 		//
-		this.worker = this.threadFactory.newThread(new ParserTask(is));
-		this.worker.start();
+		this.worker = this.threadFactory.newThread(new Task());
+		this.worker.start();	
 	}
 
 	public void stop(long timeout, TimeUnit unit) throws Exception {
@@ -91,7 +89,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 			return;
 		}
 		
-		//
+		// 2
 		if(timeout > 0) {
 			unit.timedJoin(this.worker, timeout);
 			this.worker = null;
@@ -165,23 +163,11 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	/**
 	 * 
 	 */
-	protected final class ParserTask implements Runnable {
-		//
-		private final XInputStream is;
+	protected class Task implements Runnable {
 		
-		/**
-		 * 
-		 */
-		public ParserTask(XInputStream is) {
-			this.is = is;
-		}
-
-		/**
-		 * 
-		 */
 		public void run() {
 			try {
-				parse(this.is);
+				parse();
 			} catch (Exception e) {
 				LOGGER.error("failed to parse binlog", e);
 			} finally {
@@ -196,7 +182,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	
 	protected class Context implements BinlogParserContext, BinlogEventListener {
 		//
-		private Map<Long, TableMapEvent> tableMaps = new HashMap<Long, TableMapEvent>();
+		private final Map<Long, TableMapEvent> tableMaps = new HashMap<Long, TableMapEvent>();
 		
 		/**
 		 * 

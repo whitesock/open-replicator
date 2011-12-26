@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.google.code.or.binlog.BinlogEventParser;
 import com.google.code.or.binlog.impl.event.BinlogEventV4HeaderImpl;
 import com.google.code.or.io.XInputStream;
+import com.google.code.or.net.Transport;
 import com.google.code.or.net.impl.packet.OKPacket;
 
 /**
@@ -33,12 +34,32 @@ public class ReplicationBasedBinlogParser extends AbstractBinlogParser {
 	//
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationBasedBinlogParser.class);
 	
+	//
+	protected final Transport transport;
+
+	
+	/**
+	 * 
+	 */
+	public ReplicationBasedBinlogParser(Transport transport) {
+		this.transport = transport;
+	}
+	
+	/**
+	 * 
+	 */
+	public Transport getTransport() {
+		return transport;
+	}
+
 	/**
 	 * 
 	 */
 	@Override
-	protected void parse(XInputStream is) throws Exception {
+	protected void parse() throws Exception {
 		//
+		final Context context = new Context();
+		final XInputStream is = this.transport.getInputStream();
 		while(isRunning()) {
 			try {
 				// Parse packet
@@ -65,12 +86,12 @@ public class ReplicationBasedBinlogParser extends AbstractBinlogParser {
 				}
 				
 				// Parse the event body
-				if(this.eventFilter != null && !this.eventFilter.accepts(header, this.context)) {
-					this.defaultParser.parse(is, header, this.context);
+				if(this.eventFilter != null && !this.eventFilter.accepts(header, context)) {
+					this.defaultParser.parse(is, header, context);
 				} else {
 					BinlogEventParser parser = getEventParser(header.getEventType());
 					if(parser == null) parser = this.defaultParser;
-					parser.parse(is, header, this.context);
+					parser.parse(is, header, context);
 				}
 				
 				// Ensure the packet boundary
