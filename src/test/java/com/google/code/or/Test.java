@@ -1,6 +1,8 @@
 package com.google.code.or;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,10 +25,10 @@ import com.google.code.or.binlog.impl.parser.UserVarEventParser;
 import com.google.code.or.binlog.impl.parser.WriteRowsEventParser;
 import com.google.code.or.binlog.impl.parser.XidEventParser;
 import com.google.code.or.common.glossary.column.StringColumn;
-import com.google.code.or.common.logging.Log4jInitializer;
 import com.google.code.or.common.util.MySQLConstants;
 import com.google.code.or.io.XInputStream;
 import com.google.code.or.io.impl.XInputStreamImpl;
+import com.google.code.or.logging.Log4jInitializer;
 import com.google.code.or.net.Packet;
 import com.google.code.or.net.impl.AuthenticatorImpl;
 import com.google.code.or.net.impl.TransportImpl;
@@ -52,15 +54,45 @@ public class Test {
 		//
 		Log4jInitializer.initialize();
 		
+		//
+		dumpBinlog();
+		
 		//execQuery();
 		
-		//
-		parseBinlog();
+		//parseBinlog();
 	}
 	
 	/**
 	 * 
 	 */
+	public static void dumpBinlog() throws Exception {
+		//
+		final OpenReplicator or = new OpenReplicator();
+		or.setUser("xjq");
+		or.setPassword("123456");
+		or.setHost("localhost");
+		or.setPort(3306);
+		or.setServerId(6789);
+		or.setBinlogPosition(4);
+		or.setBinlogFileName("mysql_bin.000043");
+		or.setBinlogEventListener(new BinlogEventListener() {
+		    public void onEvents(BinlogEventV4 event) {
+		    	LOGGER.info("{}", event);
+		    }
+		});
+		or.start();
+
+		//
+		System.out.println("press 'q' to stop");
+		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		for(String line = br.readLine(); line != null; line = br.readLine()) {
+		    if(line.equals("q")) {
+		        or.stop();
+		        break;
+		    }
+		}
+	}
+	
 	public static void execQuery() throws Exception {
 		//
 		final AuthenticatorImpl authenticator = new AuthenticatorImpl();
