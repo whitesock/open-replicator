@@ -187,6 +187,21 @@ public abstract class CodecUtils {
 		return r;
 	}
 	
+	public static boolean equals(byte[] data1, byte[] data2) {
+		//
+		if(data1.length != data2.length) {
+			return false;
+		}
+		
+		//
+		for(int i = 0; i < data1.length; i++) {
+			if(data1[i] != data2[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public static byte[] concat(byte[] data1, byte[] data2) {
 		final byte r[] = new byte[data1.length + data2.length];
 		System.arraycopy(data1, 0, r, 0, data1.length);

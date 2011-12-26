@@ -84,7 +84,7 @@ public class OpenReplicator {
 		
 		//
 		if(this.transport == null) this.transport = getDefaultTransport();
-		transport.connect(this.host, this.port);
+		this.transport.connect(this.host, this.port);
 		
 		//
 		dumpBinlog();
@@ -92,7 +92,7 @@ public class OpenReplicator {
 		//
 		if(this.binlogParser == null) this.binlogParser = getDefaultBinlogParser();
 		this.binlogParser.setEventListener(this.binlogEventListener);
-		this.binlogParser.start(this.transport.getInputStream());
+		this.binlogParser.start();
 	}
 
 	public void stop(long timeout, TimeUnit unit) throws Exception {
@@ -268,7 +268,7 @@ public class OpenReplicator {
 	}
 	
 	protected ReplicationBasedBinlogParser getDefaultBinlogParser() throws Exception {
-		final ReplicationBasedBinlogParser r = new ReplicationBasedBinlogParser();
+		final ReplicationBasedBinlogParser r = new ReplicationBasedBinlogParser(this.transport);
 		r.registgerEventParser(new StopEventParser());
 		r.registgerEventParser(new RotateEventParser());
 		r.registgerEventParser(new IntvarEventParser());

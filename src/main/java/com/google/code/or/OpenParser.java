@@ -16,8 +16,6 @@
  */
 package com.google.code.or;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -37,9 +35,6 @@ import com.google.code.or.binlog.impl.parser.UpdateRowsEventParser;
 import com.google.code.or.binlog.impl.parser.UserVarEventParser;
 import com.google.code.or.binlog.impl.parser.WriteRowsEventParser;
 import com.google.code.or.binlog.impl.parser.XidEventParser;
-import com.google.code.or.common.util.IOUtils;
-import com.google.code.or.io.XInputStream;
-import com.google.code.or.io.impl.XInputStreamImpl;
 
 /**
  * 
@@ -47,11 +42,12 @@ import com.google.code.or.io.impl.XInputStreamImpl;
  */
 public class OpenParser {
 	//
-	protected XInputStream is;
+	protected long stopPosition;
+	protected long startPosition;
 	protected String binlogFileName;
 	protected String binlogFilePath;
-	protected long startPosition = 4;
-	protected long stopPosition = -1;
+	
+	//
 	protected BinlogParser binlogParser;
 	protected BinlogEventListener binlogEventListener;
 	protected final AtomicBoolean running = new AtomicBoolean(false);
@@ -70,15 +66,11 @@ public class OpenParser {
 		}
 		
 		//
-		final File file = new File(this.binlogFilePath + "/" +  this.binlogFileName);
-		this.is = new XInputStreamImpl(new FileInputStream(file));
-		
-		//
 		if(this.binlogParser == null) this.binlogParser = getDefaultBinlogParser();
 		this.binlogParser.setEventListener(this.binlogEventListener);
-		this.binlogParser.start(is);
+		this.binlogParser.start();
 	}
-	
+
 	public void stop(long timeout, TimeUnit unit) throws Exception {
 		//
 		if(!this.running.compareAndSet(true, false)) {
@@ -86,13 +78,20 @@ public class OpenParser {
 		}
 		
 		//
-		IOUtils.closeQuietly(this.is);
 		this.binlogParser.stop(timeout, unit);
 	}
-
+	
 	/**
 	 * 
 	 */
+	public long getStopPosition() {
+		return stopPosition;
+	}
+	
+	public void setStopPosition(long position) {
+		this.stopPosition = position;
+	}
+	
 	public long getStartPosition() {
 		return startPosition;
 	}
@@ -101,30 +100,22 @@ public class OpenParser {
 		this.startPosition = position;
 	}
 
-	public long getStopPosition() {
-		return stopPosition;
-	}
-
-	public void setStopPosition(long position) {
-		this.stopPosition = position;
-	}
-	
 	public String getBinlogFileName() {
 		return binlogFileName;
 	}
-
-	public void setBinlogFileName(String binlogFileName) {
-		this.binlogFileName = binlogFileName;
+	
+	public void setBinlogFileName(String name) {
+		this.binlogFileName = name;
 	}
 
 	public String getBinlogFilePath() {
 		return binlogFilePath;
 	}
 
-	public void setBinlogFilePath(String binlogFilePath) {
-		this.binlogFilePath = binlogFilePath;
+	public void setBinlogFilePath(String path) {
+		this.binlogFilePath = path;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -147,7 +138,7 @@ public class OpenParser {
 	/**
 	 * 
 	 */
-	protected BinlogParser getDefaultBinlogParser() throws Exception {
+	protected FileBasedBinlogParser getDefaultBinlogParser() throws Exception {
 		//
 		final FileBasedBinlogParser r = new FileBasedBinlogParser();
 		r.registgerEventParser(new StopEventParser());
@@ -165,8 +156,10 @@ public class OpenParser {
 		r.registgerEventParser(new FormatDescriptionEventParser());
 		
 		//
-		r.setStartPosition(this.startPosition);
 		r.setStopPosition(this.stopPosition);
+		r.setStartPosition(this.startPosition);
+		r.setBinlogFileName(this.binlogFileName);
+		r.setBinlogFilePath(this.binlogFilePath);
 		return r;
 	}
 }
