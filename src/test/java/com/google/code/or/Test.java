@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventV4;
+import com.google.code.or.binlog.impl.event.XidEvent;
 import com.google.code.or.common.glossary.column.StringColumn;
 import com.google.code.or.logging.Log4jInitializer;
 import com.google.code.or.net.Packet;
@@ -39,7 +40,7 @@ public class Test {
 		//
 		parseBinlog();
 		
-		dumpBinlog();
+		//dumpBinlog();
 		
 		//execQuery();
 	}
@@ -50,18 +51,20 @@ public class Test {
 	public static void parseBinlog() throws Exception {
 		//
 		final OpenParser op = new OpenParser();
-		op.setStartPosition(307);
-		op.setBinlogFileName("mysql_bin.000050");
+		op.setStartPosition(4);
+		op.setBinlogFileName("mysql_bin.000031");
 		op.setBinlogFilePath("C:/Documents and Settings/All Users/Application Data/MySQL/MySQL Server 5.5/data");
 		op.setBinlogEventListener(new BinlogEventListener() {
 		    public void onEvents(BinlogEventV4 event) {
-		    	LOGGER.info("{}", event);
+		    	if(event instanceof XidEvent) {
+		    		LOGGER.info("{}", event);
+		    	}
 		    }
 		});
 		op.start();
 		
 		//
-		System.out.println("press 'q' to stop");
+		LOGGER.info("press 'q' to stop");
 		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		for(String line = br.readLine(); line != null; line = br.readLine()) {
 		    if(line.equals("q")) {
@@ -80,16 +83,18 @@ public class Test {
 		or.setPort(3306);
 		or.setServerId(6789);
 		or.setBinlogPosition(4);
-		or.setBinlogFileName("mysql_bin.000050");
+		or.setBinlogFileName("mysql_bin.000031");
 		or.setBinlogEventListener(new BinlogEventListener() {
 		    public void onEvents(BinlogEventV4 event) {
-		    	LOGGER.info("{}", event);
+		    	if(event instanceof XidEvent) {
+		    		LOGGER.info("{}", event);
+		    	}
 		    }
 		});
 		or.start();
 
 		//
-		System.out.println("press 'q' to stop");
+		LOGGER.info("press 'q' to stop");
 		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		for(String line = br.readLine(); line != null; line = br.readLine()) {
 		    if(line.equals("q")) {
