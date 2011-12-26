@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.code.or.common.util.IOUtils;
 import com.google.code.or.io.SocketFactory;
 import com.google.code.or.io.util.ActiveBufferedInputStream;
 import com.google.code.or.net.Packet;
@@ -30,7 +31,6 @@ import com.google.code.or.net.TransportInputStream;
 import com.google.code.or.net.TransportOutputStream;
 import com.google.code.or.net.impl.packet.ErrorPacket;
 import com.google.code.or.net.impl.packet.GreetingPacket;
-import com.google.code.or.net.util.TransportUtils;
 
 /**
  * 
@@ -112,9 +112,9 @@ public class TransportImpl extends AbstractTransport {
 		}
 		
 		//
-		TransportUtils.closeQuietly(this.is);
-		TransportUtils.closeQuietly(this.os);
-		TransportUtils.closeQuietly(this.socket);
+		IOUtils.closeQuietly(this.is);
+		IOUtils.closeQuietly(this.os);
+		IOUtils.closeQuietly(this.socket);
 		
 		//
 		if(isVerbose() && LOGGER.isInfoEnabled()) {
