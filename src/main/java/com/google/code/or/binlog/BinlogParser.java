@@ -16,6 +16,8 @@
  */
 package com.google.code.or.binlog;
 
+import java.util.concurrent.TimeUnit;
+
 import com.google.code.or.io.XInputStream;
 
 /**
@@ -30,9 +32,9 @@ public interface BinlogParser {
 	 */
 	boolean isRunning();
 	
-	void stop() throws Exception;
-	
 	void start(XInputStream is) throws Exception;
+	
+	void stop(long timeout, TimeUnit unit) throws Exception;
 	
 	/**
 	 * 
