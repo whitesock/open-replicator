@@ -268,7 +268,8 @@ public class OpenReplicator {
 	}
 	
 	protected ReplicationBasedBinlogParser getDefaultBinlogParser() throws Exception {
-		final ReplicationBasedBinlogParser r = new ReplicationBasedBinlogParser(this.transport);
+		//
+		final ReplicationBasedBinlogParser r = new ReplicationBasedBinlogParser();
 		r.registgerEventParser(new StopEventParser());
 		r.registgerEventParser(new RotateEventParser());
 		r.registgerEventParser(new IntvarEventParser());
@@ -282,6 +283,10 @@ public class OpenReplicator {
 		r.registgerEventParser(new DeleteRowsEventParser());
 		r.registgerEventParser(new UpdateRowsEventParser());
 		r.registgerEventParser(new FormatDescriptionEventParser());
+		
+		//
+		r.setTransport(this.transport);
+		r.setBinlogFileName(this.binlogFileName);
 		return r;
 	}
 }

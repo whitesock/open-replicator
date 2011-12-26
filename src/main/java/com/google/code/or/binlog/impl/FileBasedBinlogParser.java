@@ -40,38 +40,15 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileBasedBinlogParser.class);
 	
 	//
-	protected long stopPosition;
-	protected long startPosition;
 	protected String binlogFileName;
 	protected String binlogFilePath;
+	protected long stopPosition = 0;
+	protected long startPosition = 4;
 
-	/**
-	 * 
-	 */
-	public FileBasedBinlogParser() {
-		this.stopPosition = 0;
-		this.startPosition = 4;
-	}
 	
 	/**
 	 * 
 	 */
-	public long getStopPosition() {
-		return stopPosition;
-	}
-	
-	public void setStopPosition(long position) {
-		this.stopPosition = position;
-	}
-	
-	public long getStartPosition() {
-		return startPosition;
-	}
-
-	public void setStartPosition(long position) {
-		this.startPosition = position;
-	}
-
 	public String getBinlogFileName() {
 		return binlogFileName;
 	}
@@ -88,14 +65,30 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 		this.binlogFilePath = path;
 	}
 	
+	public long getStopPosition() {
+		return stopPosition;
+	}
+	
+	public void setStopPosition(long stopPosition) {
+		this.stopPosition = stopPosition;
+	}
+	
+	public long getStartPosition() {
+		return startPosition;
+	}
+
+	public void setStartPosition(long startPosition) {
+		this.startPosition = startPosition;
+	}
+	
 	/**
 	 * 
 	 */
 	@Override
 	protected void parse() throws Exception {
 		//
-		final Context context = new Context(this.binlogFileName);
 		final XInputStream is = open(this.binlogFilePath + "/" +  this.binlogFileName);
+		final Context context = new Context(this.binlogFileName);
 		while(isRunning() && is.available() > 0) {
 			try {
 				//
@@ -138,7 +131,10 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 		}
 	}
 
-	private XInputStream open(String path) throws Exception {
+	/**
+	 * 
+	 */
+	protected XInputStream open(String path) throws Exception {
 		//
 		final RandomAccessFile file = new RandomAccessFile(path, "r");
 		final XInputStream is = new XInputStreamImpl(new RamdomAccessFileInputStream(file));

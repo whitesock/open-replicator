@@ -35,15 +35,9 @@ public class ReplicationBasedBinlogParser extends AbstractBinlogParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationBasedBinlogParser.class);
 	
 	//
-	protected final Transport transport;
-
+	protected Transport transport;
+	protected String binlogFileName;
 	
-	/**
-	 * 
-	 */
-	public ReplicationBasedBinlogParser(Transport transport) {
-		this.transport = transport;
-	}
 	
 	/**
 	 * 
@@ -52,14 +46,26 @@ public class ReplicationBasedBinlogParser extends AbstractBinlogParser {
 		return transport;
 	}
 
+	public void setTransport(Transport transport) {
+		this.transport = transport;
+	}
+	
+	public String getBinlogFileName() {
+		return binlogFileName;
+	}
+
+	public void setBinlogFileName(String binlogFileName) {
+		this.binlogFileName = binlogFileName;
+	}
+
 	/**
 	 * 
 	 */
 	@Override
 	protected void parse() throws Exception {
 		//
-		final Context context = new Context();
 		final XInputStream is = this.transport.getInputStream();
+		final Context context = new Context(this.binlogFileName);
 		while(isRunning()) {
 			try {
 				// Parse packet
