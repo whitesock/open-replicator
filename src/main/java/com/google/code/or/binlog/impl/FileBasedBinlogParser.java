@@ -16,7 +16,7 @@
  */
 package com.google.code.or.binlog.impl;
 
-import java.io.RandomAccessFile;
+import java.io.FileInputStream;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
@@ -30,7 +30,6 @@ import com.google.code.or.common.util.IOUtils;
 import com.google.code.or.common.util.MySQLConstants;
 import com.google.code.or.io.XInputStream;
 import com.google.code.or.io.impl.XInputStreamImpl;
-import com.google.code.or.io.util.RamdomAccessFileInputStream;
 
 /**
  * 
@@ -153,8 +152,7 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 	 */
 	protected XInputStream open(String path) throws Exception {
 		//
-		final RandomAccessFile file = new RandomAccessFile(path, "r");
-		final XInputStream is = new XInputStreamImpl(new RamdomAccessFileInputStream(file));
+		final XInputStream is = new XInputStreamImpl(new FileInputStream(path));
 		try {
 			// Check binlog magic
 			final byte[] magic = is.readBytes(MySQLConstants.BINLOG_MAGIC.length);
