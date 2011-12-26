@@ -65,7 +65,7 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 		final int length = checkBinlogMagic(is);
 		
 		//
-		is.skip(this.startPosition - length);
+		is.skip(this.startPosition - length); // TODO
 		
 		//
 		while(isRunning() && is.available() > 0) {
