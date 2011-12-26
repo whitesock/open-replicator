@@ -62,7 +62,10 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 	@Override
 	protected void parse(XInputStream is) throws Exception {
 		//
-		checkBinlogMagic(is);
+		final int length = checkBinlogMagic(is);
+		
+		//
+		is.skip(this.startPosition - length);
 		
 		//
 		while(isRunning() && is.available() > 0) {
@@ -107,17 +110,15 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 	/**
 	 * 
 	 */
-	protected void checkBinlogMagic(XInputStream is) throws Exception {
+	protected int checkBinlogMagic(XInputStream is) throws Exception {
 		//
-		final int magicLength = MySQLConstants.BINLOG_MAGIC.length;
-		final byte[] magic = is.readBytes(magicLength);
-		for(int i = 0; i < magic.length; i++) {
+		final int length = MySQLConstants.BINLOG_MAGIC.length;
+		final byte[] magic = is.readBytes(length);
+		for(int i = 0; i < length; i++) {
 			if(magic[i] != MySQLConstants.BINLOG_MAGIC[i]) {
 				throw new NestableRuntimeException("assertion failed, invalid magic: " + magic);
 			}
 		}
-		
-		//
-		is.skip(this.startPosition - magicLength);
+		return length;
 	}
 }
