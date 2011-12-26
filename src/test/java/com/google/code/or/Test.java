@@ -39,7 +39,7 @@ public class Test {
 		//
 		parseBinlog();
 		
-		//dumpBinlog();
+		dumpBinlog();
 		
 		//execQuery();
 	}
