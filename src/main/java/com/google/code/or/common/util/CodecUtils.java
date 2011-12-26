@@ -25,7 +25,7 @@ import java.security.NoSuchAlgorithmException;
  * 
  * @author Jingqi Xu
  */
-public abstract class CodecUtils {
+public final class CodecUtils {
 	
 	/**
 	 * 
