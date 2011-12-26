@@ -37,9 +37,9 @@ public class Test {
 		Log4jInitializer.initialize();
 		
 		//
-		//parseBinlog();
+		parseBinlog();
 		
-		dumpBinlog();
+		//dumpBinlog();
 		
 		//execQuery();
 	}
@@ -51,7 +51,7 @@ public class Test {
 		//
 		final OpenParser op = new OpenParser();
 		op.setStartPosition(4);
-		op.setBinlogFileName("mysql_bin.000038");
+		op.setBinlogFileName("mysql_bin.000050");
 		op.setBinlogFilePath("C:/Documents and Settings/All Users/Application Data/MySQL/MySQL Server 5.5/data");
 		op.setBinlogEventListener(new BinlogEventListener() {
 		    public void onEvents(BinlogEventV4 event) {
@@ -59,6 +59,16 @@ public class Test {
 		    }
 		});
 		op.start();
+		
+		//
+		System.out.println("press 'q' to stop");
+		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		for(String line = br.readLine(); line != null; line = br.readLine()) {
+		    if(line.equals("q")) {
+		        op.stop(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+		        break;
+		    }
+		}
 	}
 	
 	public static void dumpBinlog() throws Exception {
@@ -70,7 +80,7 @@ public class Test {
 		or.setPort(3306);
 		or.setServerId(6789);
 		or.setBinlogPosition(4);
-		or.setBinlogFileName("mysql_bin.000043");
+		or.setBinlogFileName("mysql_bin.000050");
 		or.setBinlogEventListener(new BinlogEventListener() {
 		    public void onEvents(BinlogEventV4 event) {
 		    	LOGGER.info("{}", event);
