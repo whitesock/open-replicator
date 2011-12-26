@@ -16,11 +16,12 @@
  */
 package com.google.code.or;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogParser;
-import com.google.code.or.binlog.impl.BinlogParserImpl;
+import com.google.code.or.binlog.impl.ReplicationBasedBinlogParser;
 import com.google.code.or.binlog.impl.parser.DeleteRowsEventParser;
 import com.google.code.or.binlog.impl.parser.FormatDescriptionEventParser;
 import com.google.code.or.binlog.impl.parser.IncidentEventParser;
@@ -94,7 +95,7 @@ public class OpenReplicator {
 		this.binlogParser.start(this.transport.getInputStream());
 	}
 
-	public void stop() throws Exception {
+	public void stop(long timeout, TimeUnit unit) throws Exception {
 		//
 		if(!this.running.compareAndSet(true, false)) {
 			return;
@@ -102,7 +103,7 @@ public class OpenReplicator {
 		
 		//
 		this.transport.disconnect();
-		this.binlogParser.stop();
+		this.binlogParser.stop(timeout, unit);
 	}
 	
 	/**
@@ -266,8 +267,8 @@ public class OpenReplicator {
 		return r;
 	}
 	
-	protected BinlogParser getDefaultBinlogParser() throws Exception {
-		final BinlogParserImpl r = new BinlogParserImpl();
+	protected ReplicationBasedBinlogParser getDefaultBinlogParser() throws Exception {
+		final ReplicationBasedBinlogParser r = new ReplicationBasedBinlogParser();
 		r.registgerEventParser(new StopEventParser());
 		r.registgerEventParser(new RotateEventParser());
 		r.registgerEventParser(new IntvarEventParser());
