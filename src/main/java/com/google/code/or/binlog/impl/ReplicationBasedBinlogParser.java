@@ -16,6 +16,8 @@
  */
 package com.google.code.or.binlog.impl;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,22 @@ public class ReplicationBasedBinlogParser extends AbstractBinlogParser {
 	protected Transport transport;
 	protected String binlogFileName;
 	
+
+	/**
+	 * 
+	 */
+	public ReplicationBasedBinlogParser() {
+	}
+	
+	@Override
+	protected void doStart() throws Exception {
+		// NOP
+	}
+
+	@Override
+	protected void doStop(long timeout, TimeUnit unit) throws Exception {
+		// NOP
+	}
 	
 	/**
 	 * 
@@ -62,7 +80,7 @@ public class ReplicationBasedBinlogParser extends AbstractBinlogParser {
 	 * 
 	 */
 	@Override
-	protected void parse() throws Exception {
+	protected void doParse() throws Exception {
 		//
 		final XInputStream is = this.transport.getInputStream();
 		final Context context = new Context(this.binlogFileName);

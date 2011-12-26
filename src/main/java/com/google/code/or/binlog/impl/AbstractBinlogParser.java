@@ -56,8 +56,9 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	protected final BinlogEventParser[] parsers = new BinlogEventParser[128];
 	
 	//
-	protected abstract void parse() throws Exception;
-	
+	protected abstract void doParse() throws Exception;
+	protected abstract void doStart() throws Exception;
+	protected abstract void doStop(long timeout, TimeUnit unit) throws Exception;
 	
 	/**
 	 * 
@@ -80,6 +81,9 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		}
 		
 		//
+		doStart();
+		
+		//
 		this.worker = this.threadFactory.newThread(new Task());
 		this.worker.start();	
 	}
@@ -90,7 +94,12 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 			return;
 		}
 		
-		// 2
+		//
+		final long now = System.nanoTime();
+		doStop(timeout, unit);
+		timeout -= unit.convert(System.nanoTime() - now, TimeUnit.NANOSECONDS);
+		
+		//
 		if(timeout > 0) {
 			unit.timedJoin(this.worker, timeout);
 			this.worker = null;
@@ -168,7 +177,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		
 		public void run() {
 			try {
-				parse();
+				doParse();
 			} catch (Exception e) {
 				LOGGER.error("failed to parse binlog", e);
 			} finally {

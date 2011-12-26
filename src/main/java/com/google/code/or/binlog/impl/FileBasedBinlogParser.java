@@ -17,6 +17,7 @@
 package com.google.code.or.binlog.impl;
 
 import java.io.RandomAccessFile;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.slf4j.Logger;
@@ -40,11 +41,28 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileBasedBinlogParser.class);
 	
 	//
+	protected XInputStream is;
 	protected String binlogFileName;
 	protected String binlogFilePath;
 	protected long stopPosition = 0;
 	protected long startPosition = 4;
 
+	
+	/**
+	 * 
+	 */
+	public FileBasedBinlogParser() {
+	}
+	
+	@Override
+	protected void doStart() throws Exception {
+		this.is = open(this.binlogFilePath + "/" +  this.binlogFileName);
+	}
+
+	@Override
+	protected void doStop(long timeout, TimeUnit unit) throws Exception {
+		IOUtils.closeQuietly(this.is);
+	}
 	
 	/**
 	 * 
@@ -85,9 +103,8 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 	 * 
 	 */
 	@Override
-	protected void parse() throws Exception {
+	protected void doParse() throws Exception {
 		//
-		final XInputStream is = open(this.binlogFilePath + "/" +  this.binlogFileName);
 		final Context context = new Context(this.binlogFileName);
 		while(isRunning() && is.available() > 0) {
 			try {
