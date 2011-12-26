@@ -39,6 +39,12 @@ public class RamdomAccessFileInputStream extends InputStream {
 	 * 
 	 */
 	@Override
+	public int available() throws IOException {
+		final long fp = this.file.getFilePointer();
+		return (int)(this.file.length() - fp);
+	}
+	
+	@Override
 	public void close() throws IOException {
 		this.file.close();
 	}
