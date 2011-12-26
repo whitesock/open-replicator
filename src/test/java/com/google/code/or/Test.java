@@ -53,7 +53,7 @@ public class Test {
 		final OpenParser op = new OpenParser();
 		op.setStartPosition(4);
 		op.setBinlogFileName("mysql_bin.000031");
-		op.setBinlogFilePath("C:/Documents and Settings/All Users/Application Data/MySQL/MySQL Server 5.5/data");
+		op.setBinlogFilePath("/usr/local/mysql/data");
 		op.setBinlogEventListener(new BinlogEventListener() {
 		    public void onEvents(BinlogEventV4 event) {
 		    	if(event instanceof XidEvent) {
