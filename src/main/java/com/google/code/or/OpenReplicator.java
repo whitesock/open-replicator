@@ -61,7 +61,7 @@ public class OpenReplicator {
 	protected String encoding = "utf-8";
 	protected int level1BufferSize = 1024 * 1024;
 	protected int level2BufferSize = 8 * 1024 * 1024;
-	protected int socketReceiveBufferSize = 128 * 1024;
+	protected int socketReceiveBufferSize = 512 * 1024;
 	
 	//
 	protected Transport transport;
