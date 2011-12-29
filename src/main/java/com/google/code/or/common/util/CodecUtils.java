@@ -189,7 +189,11 @@ public final class CodecUtils {
 	
 	public static boolean equals(byte[] data1, byte[] data2) {
 		//
-		if(data1.length != data2.length) {
+		if(data1 == data2) {
+			return true;
+		} else if(data1 == null || data2 == null) {
+			return false;
+		} else if(data1.length != data2.length) {
 			return false;
 		}
 		
