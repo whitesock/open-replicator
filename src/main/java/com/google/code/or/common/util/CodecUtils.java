@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  * 
@@ -188,22 +189,7 @@ public final class CodecUtils {
 	}
 	
 	public static boolean equals(byte[] data1, byte[] data2) {
-		//
-		if(data1 == data2) {
-			return true;
-		} else if(data1 == null || data2 == null) {
-			return false;
-		} else if(data1.length != data2.length) {
-			return false;
-		}
-		
-		//
-		for(int i = 0; i < data1.length; i++) {
-			if(data1[i] != data2[i]) {
-				return false;
-			}
-		}
-		return true;
+		return Arrays.equals(data1, data2);
 	}
 	
 	public static byte[] concat(byte[] data1, byte[] data2) {
