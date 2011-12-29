@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
 
   <name>open-replicator</name>
-  <url>http://maven.apache.org</url>
+  <url>http://code.google.com/p/open-replicator/</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
