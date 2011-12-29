@@ -193,8 +193,8 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 	private final class ByteRingBuffer {
 		//
 		private int size;
-		private int head;
-		private int tail;
+		private int head; // Write
+		private int tail; // Read
 		private final byte[] buffer;
 		
 		/**
