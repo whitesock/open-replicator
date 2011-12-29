@@ -42,4 +42,5 @@
     	<version>1.6.1</version>
     </dependency>
   </dependencies>
+  <description>Open Replicator is a high performance MySQL binlog parser written in Java.</description>
 </project>
