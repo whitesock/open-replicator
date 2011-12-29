@@ -16,6 +16,7 @@
  */
 package com.google.code.or.io.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
@@ -31,8 +32,8 @@ public class RamdomAccessFileInputStream extends InputStream {
 	/**
 	 * 
 	 */
-	public RamdomAccessFileInputStream(RandomAccessFile file) {
-		this.file = file;
+	public RamdomAccessFileInputStream(File file) throws IOException {
+		this.file = new RandomAccessFile(file, "r");
 	}
 
 	/**
