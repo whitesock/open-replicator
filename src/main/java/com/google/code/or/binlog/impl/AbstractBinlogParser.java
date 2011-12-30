@@ -144,6 +144,12 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	/**
 	 * 
 	 */
+	public void clearEventParsers() {
+		for(int i = 0; i < this.parsers.length; i++) {
+			this.parsers[i] = null;
+		}
+	}
+	
 	public BinlogEventParser getEventParser(int type) {
 		return this.parsers[type];
 	}
@@ -157,13 +163,8 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	}
 	
 	public void setEventParsers(List<BinlogEventParser> parsers) {
-		//
-		for(int i = 0; i < this.parsers.length; i++) {
-			this.parsers[i] = null;
-		}
-		
-		// 
-		if(parsers != null)  {
+		clearEventParsers();
+		if(parsers != null) {
 			for(BinlogEventParser parser : parsers) {
 				registgerEventParser(parser);
 			}
