@@ -244,7 +244,11 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 			}
 			
 			//
-			AbstractBinlogParser.this.eventListener.onEvents(event);
+			try {
+				AbstractBinlogParser.this.eventListener.onEvents(event);
+			} catch(Exception e) {
+				LOGGER.error("failed to notify event listener, event: " + event, e);
+			}
 		}
 	}
 }
