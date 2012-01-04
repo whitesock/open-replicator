@@ -223,7 +223,10 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 		 * 
 		 */
 		public int read() {
+			//
 			final int r = this.buffer[this.tail] & 0xFF;
+			
+			//
 	    	this.tail = (this.tail + 1) % this.buffer.length;
 	    	this.size -= 1;
 	    	return r;
