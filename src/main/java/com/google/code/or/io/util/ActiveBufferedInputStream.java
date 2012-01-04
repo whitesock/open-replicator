@@ -224,7 +224,7 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 		 */
 		public int read() {
 			final int r = this.buffer[this.tail] & 0xFF;
-	    	this.tail = wrap(this.tail + 1);
+	    	this.tail = (this.tail + 1) % this.buffer.length;
 	    	this.size -= 1;
 	    	return r;
 		}
@@ -241,7 +241,7 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 	    	}
 	    	
 	    	//
-	    	this.tail = wrap(this.tail + r);
+	    	this.tail = (this.tail + r) % this.buffer.length;
 	    	this.size -= r;
 	    	return r;
 		}
@@ -258,17 +258,9 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 	    	}
 	    	
 	    	//
-	    	this.head = wrap(this.head + w);
+	    	this.head = (this.head + w) % this.buffer.length;
 	    	this.size += w;
 	    	return w;
-		}
-		
-		/**
-		 * 
-		 */
-		private int wrap(int index) {
-			while(index >= this.buffer.length) index -= this.buffer.length;
-			return index;
 		}
 	}
 }
