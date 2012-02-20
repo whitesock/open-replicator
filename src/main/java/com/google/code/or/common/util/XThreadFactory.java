@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * @see jp.emcom.adv.test.common.utils.concurrent.XThreadfactorytest
  * @author Jingqi Xu
  */
 public final class XThreadFactory implements ThreadFactory {
