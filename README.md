@@ -16,15 +16,16 @@ releases
     support MYSQL_TYPE_TIMESTAMP2, MYSQL_TYPE_DATETIME2, MYSQL_TYPE_TIME2 
 
 maven
-
+```
 <dependency>
         <groupId>open-replicator</groupId>
         <artifactId>open-replicator</artifactId>
         <version>1.0.6</version>
 </dependency>
+```
 
 usage
-
+```
 final OpenReplicator or = new OpenReplicator();
 or.setUser("root");
 or.setPassword("123456");
@@ -48,3 +49,4 @@ for(String line = br.readLine(); line != null; line = br.readLine()) {
         break;
     }
 }
+```
