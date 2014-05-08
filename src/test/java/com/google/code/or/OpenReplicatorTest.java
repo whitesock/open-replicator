@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventV4;
-import com.google.code.or.binlog.impl.event.XidEvent;
 
 public class OpenReplicatorTest {
 	//
@@ -30,9 +29,7 @@ public class OpenReplicatorTest {
 		or.setBinlogFileName("mysql-bin.000001");
 		or.setBinlogEventListener(new BinlogEventListener() {
 		    public void onEvents(BinlogEventV4 event) {
-		    	if(event instanceof XidEvent) {
-		    		LOGGER.info("{}", event);
-		    	}
+		    	LOGGER.info("{}", event);
 		    }
 		});
 		or.start();

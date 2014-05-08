@@ -123,7 +123,7 @@ public class XInputStreamImpl extends InputStream implements XInputStream {
 	public long readLong(int length, boolean littleEndian) throws IOException {
 		long r = 0;
 		for(int i = 0; i < length; ++i) {
-			final int v = this.read();
+			final long v = this.read();
 			if(littleEndian) {
 				r |= (v << (i << 3));
 			} else {
