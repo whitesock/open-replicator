@@ -23,6 +23,9 @@ For MySQL 5.6.6 users, binlog_checksum system variable is NOT supported by open-
         <version>1.0.6</version>
 </dependency>
 ```
+### parses
+
+BinlogEventParser is plugable. All available implementations are registered by default, but you can register only the parsers you are interested in. 
 
 ### usage
 ```
