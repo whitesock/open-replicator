@@ -64,6 +64,7 @@ public final class MySQLUtils {
 		final int h = (int)(value / 100);
 		final Calendar c = Calendar.getInstance();
         c.set(1970, 0, 1, h, m, s);
+        c.set(Calendar.MILLISECOND, 0);
         return new java.sql.Time(c.getTimeInMillis());
 	}
 	
@@ -73,8 +74,9 @@ public final class MySQLUtils {
 		final int s = (value >> 0) & 0x3F;
 		final Calendar c = Calendar.getInstance();
         c.set(1970, 0, 1, h, m, s);
+        c.set(Calendar.MILLISECOND, 0);
         final long millis = c.getTimeInMillis();
-        return new java.sql.Time(millis / 1000 * 1000 + (nanos / 1000000));
+        return new java.sql.Time(millis + (nanos / 1000000));
 	}
 	
 	public static java.util.Date toDatetime(long value) {
@@ -86,6 +88,7 @@ public final class MySQLUtils {
 		final int year = (int)(value / 100);
 		final Calendar c = Calendar.getInstance();
         c.set(year, month - 1, day, hour, minute, second);
+        c.set(Calendar.MILLISECOND, 0);
         return c.getTime();
 	}
 	
@@ -99,8 +102,9 @@ public final class MySQLUtils {
 		final int second = ((int)(value >> 0)) & 0x3F;
 		final Calendar c = Calendar.getInstance();
         c.set(year, month - 1, day, hour, minute, second);
+        c.set(Calendar.MILLISECOND, 0);
         final long millis = c.getTimeInMillis();
-        return new java.util.Date(millis / 1000 * 1000 + (nanos / 1000000));
+        return new java.util.Date(millis + (nanos / 1000000));
 	}
 	
 	public static java.sql.Timestamp toTimestamp(long seconds) {
