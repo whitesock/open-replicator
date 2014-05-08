@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.code.or.common.glossary.column.StringColumn;
 import com.google.code.or.io.impl.SocketFactoryImpl;
-import com.google.code.or.logging.Log4jInitializer;
 import com.google.code.or.net.Packet;
 import com.google.code.or.net.impl.AuthenticatorImpl;
 import com.google.code.or.net.impl.TransportImpl;
@@ -28,9 +27,6 @@ public class QueryTest {
 	 * 
 	 */
 	public static void main(String args[]) throws Exception {
-		//
-		Log4jInitializer.initialize();
-		
 		//
 		final AuthenticatorImpl authenticator = new AuthenticatorImpl();
 		authenticator.setUser("xjq");

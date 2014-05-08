@@ -16,11 +16,9 @@
  */
 package com.google.code.or.binlog.impl.event;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.util.MySQLConstants;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * Written every time a statement uses the RAND() function; precedes other events for the statement. 
@@ -52,7 +50,7 @@ public final class RandEvent extends AbstractBinlogEventV4 {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("header", header)
 		.append("randSeed1", randSeed1)
 		.append("randSeed2", randSeed2).toString();

@@ -25,6 +25,8 @@ public final class MySQLConstants {
 	public static final byte[] BINLOG_MAGIC = new byte[]{(byte)0xfe, (byte)0x62, (byte)0x69, (byte)0x6e};
 	
 	//
+	public static final int MAX_TIME_WIDTH = 10;
+	public static final int MAX_DATETIME_WIDTH = 19;
 	public static final int MAX_PACKET_LENGTH = (256 * 256 * 256 - 1);
 	
 	// Client capabilities
@@ -97,6 +99,11 @@ public final class MySQLConstants {
 	public static final int Q_TABLE_MAP_FOR_UPDATE_CODE = 9;
 	public static final int Q_MASTER_DATA_WRITTEN_CODE = 10;
 	public static final int Q_INVOKER = 11;
+	public static final int Q_UPDATED_DB_NAMES = 12;
+	public static final int Q_MICROSECONDS = 13;
+	
+	public static final int MAX_DBS_IN_EVENT_MTS = 16;
+	public static final int OVER_MAX_DBS_IN_EVENT_MTS = 254;
 	
 	// User variable type
 	public static final int STRING_RESULT = 0;
@@ -123,6 +130,9 @@ public final class MySQLConstants {
 	public static final int TYPE_NEWDATE = 14;
 	public static final int TYPE_VARCHAR = 15;
 	public static final int TYPE_BIT = 16;
+	public static final int TYPE_TIMESTAMP2 = 17;
+	public static final int TYPE_DATETIME2 = 18;
+	public static final int TYPE_TIME2 = 19;
 	public static final int TYPE_NEWDECIMAL = 246;
 	public static final int TYPE_ENUM = 247;
 	public static final int TYPE_SET = 248;
@@ -197,4 +207,12 @@ public final class MySQLConstants {
 	public static final int DELETE_ROWS_EVENT  = 25;
 	public static final int INCIDENT_EVENT = 26;
 	public static final int HEARTBEAT_LOG_EVENT = 27;
+	public static final int IGNORABLE_LOG_EVENT = 28;
+	public static final int ROWS_QUERY_LOG_EVENT = 29;
+	public static final int WRITE_ROWS_EVENT_V2 = 30;
+	public static final int UPDATE_ROWS_EVENT_V2 = 31;
+	public static final int DELETE_ROWS_EVENT_V2 = 32;
+	public static final int GTID_LOG_EVENT = 33;
+	public static final int ANONYMOUS_GTID_LOG_EVENT = 34;
+	public static final int PREVIOUS_GTIDS_LOG_EVENT = 35;
 }

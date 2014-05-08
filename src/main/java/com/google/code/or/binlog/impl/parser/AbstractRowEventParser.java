@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
-
 import com.google.code.or.binlog.BinlogRowEventFilter;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.filter.BinlogRowEventFilterImpl;
@@ -31,6 +29,7 @@ import com.google.code.or.common.glossary.Row;
 import com.google.code.or.common.glossary.column.BitColumn;
 import com.google.code.or.common.glossary.column.BlobColumn;
 import com.google.code.or.common.glossary.column.DateColumn;
+import com.google.code.or.common.glossary.column.Datetime2Column;
 import com.google.code.or.common.glossary.column.DatetimeColumn;
 import com.google.code.or.common.glossary.column.DecimalColumn;
 import com.google.code.or.common.glossary.column.DoubleColumn;
@@ -42,7 +41,9 @@ import com.google.code.or.common.glossary.column.LongLongColumn;
 import com.google.code.or.common.glossary.column.NullColumn;
 import com.google.code.or.common.glossary.column.SetColumn;
 import com.google.code.or.common.glossary.column.ShortColumn;
+import com.google.code.or.common.glossary.column.Time2Column;
 import com.google.code.or.common.glossary.column.TimeColumn;
+import com.google.code.or.common.glossary.column.Timestamp2Column;
 import com.google.code.or.common.glossary.column.TimestampColumn;
 import com.google.code.or.common.glossary.column.TinyColumn;
 import com.google.code.or.common.glossary.column.YearColumn;
@@ -84,9 +85,10 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 	protected Row parseRow(XInputStream is, TableMapEvent tme, BitColumn usedColumns) 
 	throws IOException {
 		//
+		int unusedColumnCount = 0;
 		final byte[] types = tme.getColumnTypes();
 		final Metadata metadata = tme.getColumnMetadata();
-		final BitColumn nullColumns = is.readBit(types.length, true);
+		final BitColumn nullColumns = is.readBit(types.length);
 		final List<Column> columns = new ArrayList<Column>(types.length);
 		for(int i = 0; i < types.length; ++i) {
 			//
@@ -108,15 +110,16 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 						length = meta1;
 						break;
 					default:
-						throw new NestableRuntimeException("assertion failed, unknown column type: " + type);
+						throw new RuntimeException("assertion failed, unknown column type: " + type);
 					}
 				}
 			}
 			
 			//
 			if(!usedColumns.get(i)) {
+				unusedColumnCount++;
 				continue;
-			} else if(nullColumns.get(i)) {
+			} else if(nullColumns.get(i - unusedColumnCount)) {
 				columns.add(NullColumn.valueOf(type));
 				continue;
 			}
@@ -133,17 +136,17 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 			case MySQLConstants.TYPE_YEAR: columns.add(YearColumn.valueOf(MySQLUtils.toYear(is.readInt(1)))); break;
 			case MySQLConstants.TYPE_DATE: columns.add(DateColumn.valueOf(MySQLUtils.toDate(is.readInt(3)))); break;
 			case MySQLConstants.TYPE_TIME: columns.add(TimeColumn.valueOf(MySQLUtils.toTime(is.readInt(3)))); break;
-			case MySQLConstants.TYPE_TIMESTAMP: columns.add(TimestampColumn.valueOf(MySQLUtils.toTimestamp(is.readLong(4)))); break;
 			case MySQLConstants.TYPE_DATETIME: columns.add(DatetimeColumn.valueOf(MySQLUtils.toDatetime(is.readLong(8)))); break;
+			case MySQLConstants.TYPE_TIMESTAMP: columns.add(TimestampColumn.valueOf(MySQLUtils.toTimestamp(is.readLong(4)))); break;
 			case MySQLConstants.TYPE_ENUM: columns.add(EnumColumn.valueOf(is.readInt(length))); break;
 			case MySQLConstants.TYPE_SET: columns.add(SetColumn.valueOf(is.readLong(length))); break;
-			case MySQLConstants.TYPE_STRING:
-				final int stringLength = length < 256 ? is.readInt(1) : is.readInt(2);
-				columns.add(is.readFixedLengthString(stringLength));
-				break;
 			case MySQLConstants.TYPE_BIT: 
 				final int bitLength = (meta >> 8) * 8 + (meta & 0xFF);
 				columns.add(is.readBit(bitLength, false));
+				break;
+			case MySQLConstants.TYPE_BLOB:
+				final int blobLength = is.readInt(meta);
+				columns.add(BlobColumn.valueOf(is.readBytes(blobLength)));
 				break;
 			case MySQLConstants.TYPE_NEWDECIMAL:
 				final int precision = meta & 0xFF;
@@ -151,17 +154,32 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 		        final int decimalLength = MySQLUtils.getDecimalBinarySize(precision, scale);
 		        columns.add(DecimalColumn.valueOf(MySQLUtils.toDecimal(precision, scale, is.readBytes(decimalLength)), precision, scale));
 				break;
-			case MySQLConstants.TYPE_BLOB:
-				final int blobLength = is.readInt(meta);
-				columns.add(BlobColumn.valueOf(is.readBytes(blobLength)));
+			case MySQLConstants.TYPE_STRING:
+				final int stringLength = length < 256 ? is.readInt(1) : is.readInt(2);
+				columns.add(is.readFixedLengthString(stringLength));
 				break;
 			case MySQLConstants.TYPE_VARCHAR:
 			case MySQLConstants.TYPE_VAR_STRING:
 				final int varcharLength = meta < 256 ? is.readInt(1) : is.readInt(2);
 				columns.add(is.readFixedLengthString(varcharLength));
 				break;
+			case MySQLConstants.TYPE_TIME2:
+				final int value1 = is.readInt(3, false);
+				final int nanos1 = is.readInt((meta + 1) / 2, false);
+				columns.add(Time2Column.valueOf(MySQLUtils.toTime2(value1, nanos1)));
+				break;
+			case MySQLConstants.TYPE_DATETIME2:
+				final long value2 = is.readLong(5, false);
+				final int nanos2 = is.readInt((meta + 1) / 2, false);
+				columns.add(Datetime2Column.valueOf(MySQLUtils.toDatetime2(value2, nanos2)));
+				break;
+			case MySQLConstants.TYPE_TIMESTAMP2:
+				final long value3 = is.readLong(4, false);
+				final int nanos3 = is.readInt((meta + 1) / 2, false);
+				columns.add(Timestamp2Column.valueOf(MySQLUtils.toTimestamp2(value3, nanos3)));
+				break;
 			default:
-				throw new NestableRuntimeException("assertion failed, unknown column type: " + type);
+				throw new RuntimeException("assertion failed, unknown column type: " + type);
 			}
 		}
 		return new Row(columns);

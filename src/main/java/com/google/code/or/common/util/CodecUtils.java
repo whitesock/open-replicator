@@ -31,22 +31,6 @@ public final class CodecUtils {
 	/**
 	 * 
 	 */
-	public static int toBigEndian(final int v) {
-		int r = v;
-		for(int i = 0; i < 4; i++) {
-			r = ((r & 0x000000FF) << 24) | (r >>> 8);
-		}
-		return r;
-	}
-	
-	public static long toBigEndian(final long v) {
-		long r = v;
-		for(int i = 0; i < 8; i++) {
-			r = ((r & 0x00000000000000FFL) << 56) | (r >>> 8);
-		}
-		return r;
-	}
-	
 	public static byte[] toBigEndian(byte[] value) {
 		for(int i = 0, length = value.length >> 2; i <= length; i++) {
 			final int j = value.length - 1 - i;

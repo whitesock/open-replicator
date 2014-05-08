@@ -16,10 +16,8 @@
  */
 package com.google.code.or.common.glossary.column;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.common.glossary.Column;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * 
@@ -44,7 +42,7 @@ public class BlobColumn implements Column {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("value", value).toString();
 	}
 	

@@ -16,12 +16,10 @@
  */
 package com.google.code.or.binlog.impl.event;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.column.StringColumn;
 import com.google.code.or.common.util.MySQLConstants;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * A descriptor event that is written to the beginning of the each binary log file. 
@@ -55,7 +53,7 @@ public final class FormatDescriptionEvent extends AbstractBinlogEventV4 {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("header", header)
 		.append("binlogVersion", binlogVersion)
 		.append("serverVersion", serverVersion)

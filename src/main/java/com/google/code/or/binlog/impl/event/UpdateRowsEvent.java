@@ -18,15 +18,13 @@ package com.google.code.or.binlog.impl.event;
 
 import java.util.List;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.Pair;
 import com.google.code.or.common.glossary.Row;
 import com.google.code.or.common.glossary.UnsignedLong;
 import com.google.code.or.common.glossary.column.BitColumn;
 import com.google.code.or.common.util.MySQLConstants;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * Used for row-based binary logging. This event logs updates of rows in a single table. 
@@ -58,7 +56,7 @@ public final class UpdateRowsEvent extends AbstractRowEvent {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("header", header)
 		.append("tableId", tableId)
 		.append("reserved", reserved)

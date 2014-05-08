@@ -16,13 +16,11 @@
  */
 package com.google.code.or.binlog.impl.event;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.binlog.UserVariable;
 import com.google.code.or.common.glossary.column.StringColumn;
 import com.google.code.or.common.util.MySQLConstants;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * Written every time a statement uses a user variable; precedes other events for the statement. 
@@ -59,7 +57,7 @@ public final class UserVarEvent extends AbstractBinlogEventV4 {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("header", header)
 		.append("varNameLength", varNameLength)
 		.append("varName", varName)

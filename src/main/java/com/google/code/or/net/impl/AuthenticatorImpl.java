@@ -18,7 +18,6 @@ package com.google.code.or.net.impl;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +91,7 @@ public class AuthenticatorImpl implements Transport.Authenticator {
 			LOGGER.info("login successfully, user: {}, detail: {}", this.user, ok);
 		} else {
 			LOGGER.warn("login failed, unknown packet: ", response);
-			throw new NestableRuntimeException("assertion failed, invalid packet: " + response);
+			throw new RuntimeException("assertion failed, invalid packet: " + response);
 		}
 	}
 	

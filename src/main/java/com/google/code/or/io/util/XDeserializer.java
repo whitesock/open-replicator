@@ -78,6 +78,10 @@ public class XDeserializer implements XInputStream {
 		return this.tis.readBytes(length);
 	}
 	
+	public BitColumn readBit(int length) throws IOException {
+		return readBit(length);
+	}
+	
 	public UnsignedLong readUnsignedLong() throws IOException {
 		return tis.readUnsignedLong();
 	}
@@ -94,7 +98,15 @@ public class XDeserializer implements XInputStream {
 		return this.tis.readFixedLengthString(length);
 	}
 	
-	public BitColumn readBit(int length, boolean isBigEndian) throws IOException {
-		return this.tis.readBit(length, isBigEndian);
+	public int readInt(int length, boolean littleEndian) throws IOException {
+		return this.tis.readInt(length, littleEndian);
+	}
+
+	public long readLong(int length, boolean littleEndian) throws IOException {
+		return this.tis.readLong(length, littleEndian);
+	}
+	
+	public BitColumn readBit(int length, boolean littleEndian) throws IOException {
+		return tis.readBit(length, littleEndian);
 	}
 }

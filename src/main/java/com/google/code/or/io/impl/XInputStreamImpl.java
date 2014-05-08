@@ -20,8 +20,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
-
 import com.google.code.or.common.glossary.UnsignedLong;
 import com.google.code.or.common.glossary.column.BitColumn;
 import com.google.code.or.common.glossary.column.StringColumn;
@@ -59,28 +57,22 @@ public class XInputStreamImpl extends InputStream implements XInputStream {
 	/**
 	 * 
 	 */
-	public int readInt(final int length) throws IOException {
-		int r = 0;
-		for(int i = 0; i < length; ++i) {
-			final int v = this.read();
-			r |= (v << (i << 3));
-		}
-		return r;
+	public int readInt(int length) throws IOException {
+		return readInt(length, true);
 	}
 	
-	public long readLong(final int length) throws IOException {
-		long r = 0;
-		for(int i = 0; i < length; ++i) {
-			final long v = this.read();
-			r |= (v << (i << 3));
-		}
-		return r;
+	public long readLong(int length) throws IOException {
+		return readLong(length, true);
 	}
 	
-	public byte[] readBytes(final int length) throws IOException {
+	public byte[] readBytes(int length) throws IOException {
 		final byte[] r = new byte[length];
 		this.read(r, 0, length);
 		return r;
+	}
+	
+	public BitColumn readBit(int length) throws IOException {
+		return readBit(length, true);
 	}
 	
 	public UnsignedLong readUnsignedLong() throws IOException {
@@ -90,7 +82,7 @@ public class XInputStreamImpl extends InputStream implements XInputStream {
 		else if(v == 252) return UnsignedLong.valueOf(readInt(2));
 		else if(v == 253) return UnsignedLong.valueOf(readInt(3));
 		else if(v == 254) return UnsignedLong.valueOf(readLong(8));
-		else throw new NestableRuntimeException("assertion failed, should NOT reach here");
+		else throw new RuntimeException("assertion failed, should NOT reach here");
 	}
 	
 	public StringColumn readLengthCodedString() throws IOException {
@@ -112,11 +104,41 @@ public class XInputStreamImpl extends InputStream implements XInputStream {
 		return StringColumn.valueOf(readBytes(length));
 	}
 	
-	public BitColumn readBit(final int length, boolean isBigEndian) throws IOException {
-		final byte[] value = readBytes((int)((length + 7) >> 3));
-		return isBigEndian ? BitColumn.valueOf(length, value) : BitColumn.valueOf(length, CodecUtils.toBigEndian(value));
+	/**
+	 * 
+	 */
+	public int readInt(int length, boolean littleEndian) throws IOException {
+		int r = 0;
+		for(int i = 0; i < length; ++i) {
+			final int v = this.read();
+			if(littleEndian) {
+				r |= (v << (i << 3));
+			} else {
+				r = (r << 8) | v;
+			}
+		}
+		return r;
 	}
 
+	public long readLong(int length, boolean littleEndian) throws IOException {
+		long r = 0;
+		for(int i = 0; i < length; ++i) {
+			final int v = this.read();
+			if(littleEndian) {
+				r |= (v << (i << 3));
+			} else {
+				r = (r << 8) | v;
+			}
+		}
+		return r;
+	}
+	
+	public BitColumn readBit(int length, boolean littleEndian) throws IOException {
+		byte[] bytes = readBytes((int)((length + 7) >> 3));
+		if(!littleEndian) bytes = CodecUtils.toBigEndian(bytes);
+		return BitColumn.valueOf(length, bytes);
+	}
+	
 	/**
 	 * 
 	 */

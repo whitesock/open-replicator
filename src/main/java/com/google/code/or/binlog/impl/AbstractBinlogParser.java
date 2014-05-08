@@ -16,9 +16,11 @@
  */
 package com.google.code.or.binlog.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,6 +34,7 @@ import com.google.code.or.binlog.BinlogEventParser;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.BinlogParser;
 import com.google.code.or.binlog.BinlogParserContext;
+import com.google.code.or.binlog.BinlogParserListener;
 import com.google.code.or.binlog.impl.event.RotateEvent;
 import com.google.code.or.binlog.impl.event.TableMapEvent;
 import com.google.code.or.binlog.impl.parser.NopEventParser;
@@ -50,6 +53,8 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	protected ThreadFactory threadFactory;
 	protected BinlogEventFilter eventFilter;
 	protected BinlogEventListener eventListener;
+	protected boolean clearTableMapEventsOnRotate = true;
+	protected final List<BinlogParserListener> parserListeners;
 	protected final AtomicBoolean verbose = new AtomicBoolean(false);
 	protected final AtomicBoolean running = new AtomicBoolean(false);
 	protected final BinlogEventParser defaultParser = new NopEventParser();
@@ -65,6 +70,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	 */
 	public AbstractBinlogParser() {
 		this.threadFactory = new XThreadFactory("binlog-parser", false);
+		this.parserListeners = new CopyOnWriteArrayList<BinlogParserListener>();
 	}
 	
 	/**
@@ -85,7 +91,10 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		
 		//
 		this.worker = this.threadFactory.newThread(new Task());
-		this.worker.start();	
+		this.worker.start();
+		
+		//
+		notifyOnStart();
 	}
 
 	public void stop(long timeout, TimeUnit unit) throws Exception {
@@ -95,14 +104,19 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		}
 		
 		//
-		final long now = System.nanoTime();
-		doStop(timeout, unit);
-		timeout -= unit.convert(System.nanoTime() - now, TimeUnit.NANOSECONDS);
-		
-		//
-		if(timeout > 0) {
-			unit.timedJoin(this.worker, timeout);
-			this.worker = null;
+		try {
+			//
+			final long now = System.nanoTime();
+			doStop(timeout, unit);
+			timeout -= unit.convert(System.nanoTime() - now, TimeUnit.NANOSECONDS);
+			
+			//
+			if(timeout > 0) {
+				unit.timedJoin(this.worker, timeout);
+				this.worker = null;
+			}
+		} finally {
+			notifyOnStop();
 		}
 	}
 	
@@ -141,6 +155,14 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		this.eventListener = listener;
 	}
 	
+	public boolean isClearTableMapEventsOnRotate() {
+		return clearTableMapEventsOnRotate;
+	}
+	
+	public void setClearTableMapEventsOnRotate(boolean clearTableMapEventsOnRotate) {
+		this.clearTableMapEventsOnRotate = clearTableMapEventsOnRotate;
+	}
+	
 	/**
 	 * 
 	 */
@@ -174,18 +196,60 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	/**
 	 * 
 	 */
+	public List<BinlogParserListener> getParserListeners() {
+		return new ArrayList<BinlogParserListener>(this.parserListeners);
+	}
+	
+	public boolean addParserListener(BinlogParserListener listener) {
+		return this.parserListeners.add(listener);
+	}
+	
+	public boolean removeParserListener(BinlogParserListener listener) {
+		return this.parserListeners.remove(listener);
+	}
+	
+	public void setParserListeners(List<BinlogParserListener> listeners) {
+		this.parserListeners.clear();
+		if(listeners != null) this.parserListeners.addAll(listeners);
+	}
+	
+	/**
+	 * 
+	 */
+	private void notifyOnStart() {
+		for(BinlogParserListener listener : this.parserListeners) {
+			listener.onStart(this);
+		}
+	}
+	
+	private void notifyOnStop() {
+		for(BinlogParserListener listener : this.parserListeners) {
+			listener.onStop(this);
+		}
+	}
+	
+	private void notifyOnException(Exception exception) {
+		for(BinlogParserListener listener : this.parserListeners) {
+			listener.onException(this, exception);
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	protected class Task implements Runnable {
 		
 		public void run() {
 			try {
 				doParse();
 			} catch (Exception e) {
+				notifyOnException(e);
 				LOGGER.error("failed to parse binlog", e);
 			} finally {
 				try {
 					stop(0, TimeUnit.MILLISECONDS);
 				} catch(Exception e) {
-					LOGGER.error("failed to stop parser", e);
+					LOGGER.error("failed to stop binlog parser", e);
 				}
 			}
 		}
@@ -194,7 +258,7 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 	protected class Context implements BinlogParserContext, BinlogEventListener {
 		//
 		private String binlogFileName;
-		private final Map<Long, TableMapEvent> tableMaps = new HashMap<Long, TableMapEvent>();
+		private final Map<Long, TableMapEvent> tableMapEvents = new HashMap<Long, TableMapEvent>();
 
 		/**
 		 * 
@@ -209,20 +273,20 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 		/**
 		 * 
 		 */
-		public String getBinlogFileName() {
+		public final String getBinlogFileName() {
 			return binlogFileName;
 		}
 
-		public void setBinlogFileName(String name) {
+		public final void setBinlogFileName(String name) {
 			this.binlogFileName = name;
 		}
 		
-		public BinlogEventListener getEventListener() {
+		public final BinlogEventListener getEventListener() {
 			return this;
 		}
 
-		public TableMapEvent getTableMapEvent(long tableId) {
-			return this.tableMaps.get(tableId);
+		public final TableMapEvent getTableMapEvent(long tableId) {
+			return this.tableMapEvents.get(tableId);
 		}
 		
 		/**
@@ -237,17 +301,18 @@ public abstract class AbstractBinlogParser implements BinlogParser {
 			//
 			if(event instanceof TableMapEvent) {
 				final TableMapEvent tme = (TableMapEvent)event;
-				this.tableMaps.put(tme.getTableId(), tme);
+				this.tableMapEvents.put(tme.getTableId(), tme);
 			} else if(event instanceof RotateEvent) {
 				final RotateEvent re = (RotateEvent)event;
 				this.binlogFileName = re.getBinlogFileName().toString();
+				if(isClearTableMapEventsOnRotate()) this.tableMapEvents.clear();
 			}
 			
 			//
 			try {
 				AbstractBinlogParser.this.eventListener.onEvents(event);
 			} catch(Exception e) {
-				LOGGER.error("failed to notify event listener, event: " + event, e);
+				LOGGER.error("failed to notify binlog event listener, event: " + event, e);
 			}
 		}
 	}

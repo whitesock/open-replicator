@@ -23,6 +23,7 @@ import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogParser;
 import com.google.code.or.binlog.impl.FileBasedBinlogParser;
 import com.google.code.or.binlog.impl.parser.DeleteRowsEventParser;
+import com.google.code.or.binlog.impl.parser.DeleteRowsEventV2Parser;
 import com.google.code.or.binlog.impl.parser.FormatDescriptionEventParser;
 import com.google.code.or.binlog.impl.parser.IncidentEventParser;
 import com.google.code.or.binlog.impl.parser.IntvarEventParser;
@@ -32,8 +33,10 @@ import com.google.code.or.binlog.impl.parser.RotateEventParser;
 import com.google.code.or.binlog.impl.parser.StopEventParser;
 import com.google.code.or.binlog.impl.parser.TableMapEventParser;
 import com.google.code.or.binlog.impl.parser.UpdateRowsEventParser;
+import com.google.code.or.binlog.impl.parser.UpdateRowsEventV2Parser;
 import com.google.code.or.binlog.impl.parser.UserVarEventParser;
 import com.google.code.or.binlog.impl.parser.WriteRowsEventParser;
+import com.google.code.or.binlog.impl.parser.WriteRowsEventV2Parser;
 import com.google.code.or.binlog.impl.parser.XidEventParser;
 
 /**
@@ -151,8 +154,11 @@ public class OpenParser {
 		r.registgerEventParser(new IncidentEventParser());
 		r.registgerEventParser(new TableMapEventParser());
 		r.registgerEventParser(new WriteRowsEventParser());
-		r.registgerEventParser(new DeleteRowsEventParser());
 		r.registgerEventParser(new UpdateRowsEventParser());
+		r.registgerEventParser(new DeleteRowsEventParser());
+		r.registgerEventParser(new WriteRowsEventV2Parser());
+		r.registgerEventParser(new UpdateRowsEventV2Parser());
+		r.registgerEventParser(new DeleteRowsEventV2Parser());
 		r.registgerEventParser(new FormatDescriptionEventParser());
 		
 		//

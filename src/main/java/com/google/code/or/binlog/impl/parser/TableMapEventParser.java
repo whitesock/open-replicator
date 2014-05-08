@@ -30,7 +30,7 @@ import com.google.code.or.io.XInputStream;
  */
 public class TableMapEventParser extends AbstractBinlogEventParser {
 	// 
-	private boolean reusePreviousEvent = false; // Note: use with caution!
+	private boolean reusePreviousEvent = true;
 
 	/**
 	 * 
@@ -77,7 +77,7 @@ public class TableMapEventParser extends AbstractBinlogEventParser {
 		event.setColumnTypes(is.readBytes(event.getColumnCount().intValue()));
 		event.setColumnMetadataCount(is.readUnsignedLong()); 
 		event.setColumnMetadata(Metadata.valueOf(event.getColumnTypes(), is.readBytes(event.getColumnMetadataCount().intValue())));
-		event.setColumnNullabilities(is.readBit(event.getColumnCount().intValue(), true));
+		event.setColumnNullabilities(is.readBit(event.getColumnCount().intValue()));
 		context.getEventListener().onEvents(event);
 	}
 }

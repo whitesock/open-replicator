@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.XidEvent;
-import com.google.code.or.logging.Log4jInitializer;
 
 public class OpenReplicatorTest {
 	//
@@ -20,9 +19,6 @@ public class OpenReplicatorTest {
 	 * 
 	 */
 	public static void main(String args[]) throws Exception {
-		//
-		Log4jInitializer.initialize();
-		
 		//
 		final OpenReplicator or = new OpenReplicator();
 		or.setUser("xjq");

@@ -19,7 +19,6 @@ package com.google.code.or.binlog.impl;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +115,7 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 				header.setEventLength(is.readInt(4));
 				header.setNextPosition(is.readLong(4));
 				header.setFlags(is.readInt(2));
+				header.setTimestampOfReceipt(System.currentTimeMillis());
 				is.setReadLimit((int)(header.getEventLength() - header.getHeaderLength())); // Ensure the event boundary
 				if(isVerbose() && LOGGER.isInfoEnabled()) {
 					LOGGER.info("read an event, header: {}", header);
@@ -137,7 +137,7 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 				
 				// Ensure the packet boundary
 				if(is.available() != 0) {
-					throw new NestableRuntimeException("assertion failed, available: " + is.available() + ", event type: " + header.getEventType());
+					throw new RuntimeException("assertion failed, available: " + is.available() + ", event type: " + header.getEventType());
 				}
 			} catch(Exception e) {
 				IOUtils.closeQuietly(is);
@@ -158,7 +158,7 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 			// Check binlog magic
 			final byte[] magic = is.readBytes(MySQLConstants.BINLOG_MAGIC.length);
 			if(!CodecUtils.equals(magic, MySQLConstants.BINLOG_MAGIC)) {
-				throw new NestableRuntimeException("invalid binlog magic, file: " + path);
+				throw new RuntimeException("invalid binlog magic, file: " + path);
 			}
 			
 			//

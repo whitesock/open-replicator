@@ -17,6 +17,7 @@
 package com.google.code.or.common.util;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
@@ -39,7 +40,7 @@ public final class MySQLUtils {
 		final byte[] stage2 = CodecUtils.sha(CodecUtils.concat(scramble, CodecUtils.sha(stage1)));
 		return CodecUtils.xor(stage1, stage2);
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -62,24 +63,54 @@ public final class MySQLUtils {
 		final int m = (int)(value % 100);
 		final int h = (int)(value / 100);
 		final Calendar c = Calendar.getInstance();
-        c.set(70, 0, 1, h, m, s);
+        c.set(1970, 0, 1, h, m, s);
         return new java.sql.Time(c.getTimeInMillis());
 	}
 	
+	public static java.sql.Time toTime2(int value, int nanos) {
+		final int h = (value >> 12) & 0x3FF;
+		final int m = (value >> 6) & 0x3F;
+		final int s = (value >> 0) & 0x3F;
+		final Calendar c = Calendar.getInstance();
+        c.set(1970, 0, 1, h, m, s);
+        final long millis = c.getTimeInMillis();
+        return new java.sql.Time(millis / 1000 * 1000 + (nanos / 1000000));
+	}
+	
 	public static java.util.Date toDatetime(long value) {
-		final int sec  = (int)(value % 100); value /= 100;
-		final int min  = (int)(value % 100); value /= 100;
+		final int second = (int)(value % 100); value /= 100;
+		final int minute = (int)(value % 100); value /= 100;
 		final int hour = (int)(value % 100); value /= 100;
-		final int day  = (int)(value % 100); value /= 100;
-		final int mon  = (int)(value % 100);
+		final int day = (int)(value % 100); value /= 100;
+		final int month = (int)(value % 100);
 		final int year = (int)(value / 100);
 		final Calendar c = Calendar.getInstance();
-        c.set(year, mon - 1, day, hour, min, sec);
+        c.set(year, month - 1, day, hour, minute, second);
         return c.getTime();
 	}
 	
-	public static java.sql.Timestamp toTimestamp(long value) {
-		return new java.sql.Timestamp(value * 1000L);
+	public static java.util.Date toDatetime2(long value, int nanos) {
+		final long x = (value >> 22) & 0x1FFFFL;
+		final int year = (int)(x / 13);
+		final int month = (int)(x % 13);
+		final int day = ((int)(value >> 17)) & 0x1F;
+		final int hour = ((int)(value >> 12)) & 0x1F;
+		final int minute = ((int)(value >> 6)) & 0x3F;
+		final int second = ((int)(value >> 0)) & 0x3F;
+		final Calendar c = Calendar.getInstance();
+        c.set(year, month - 1, day, hour, minute, second);
+        final long millis = c.getTimeInMillis();
+        return new java.util.Date(millis / 1000 * 1000 + (nanos / 1000000));
+	}
+	
+	public static java.sql.Timestamp toTimestamp(long seconds) {
+		return new java.sql.Timestamp(seconds * 1000L);
+	}
+	
+	public static Timestamp toTimestamp2(long seconds, int nanos) {
+		final java.sql.Timestamp r = new java.sql.Timestamp(seconds * 1000L);
+		r.setNanos(nanos);
+		return r;
 	}
 	
 	public static BigDecimal toDecimal(int precision, int scale, byte[] value) {

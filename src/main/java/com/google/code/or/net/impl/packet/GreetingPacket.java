@@ -18,10 +18,8 @@ package com.google.code.or.net.impl.packet;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.common.glossary.column.StringColumn;
+import com.google.code.or.common.util.ToStringBuilder;
 import com.google.code.or.io.util.XDeserializer;
 import com.google.code.or.io.util.XSerializer;
 import com.google.code.or.net.Packet;
@@ -50,7 +48,7 @@ public class GreetingPacket extends AbstractPacket {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("protocolVersion", protocolVersion)
 		.append("serverVersion", serverVersion)
 		.append("threadId", threadId)
@@ -132,7 +130,7 @@ public class GreetingPacket extends AbstractPacket {
 		r.serverStatus = d.readInt(2);
 		d.skip(13); // reserved, all 0
 		r.scramble2 = d.readNullTerminatedString();
-		r.pluginProvidedData = d.readNullTerminatedString();
+		if(d.hasMore()) r.pluginProvidedData = d.readNullTerminatedString();
 		return r;
 	}
 }

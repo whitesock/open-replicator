@@ -47,7 +47,7 @@ public final class BitColumn implements Column {
 	@Override
 	public String toString() {
 		final StringBuilder r = new StringBuilder(this.length);
-		for(int i = 0; i < this.length; i++) {
+		for(int i = this.length - 1; i >= 0; i--) {
 			r.append(get(i) ? "1" : "0");
 		}
 		return r.toString();

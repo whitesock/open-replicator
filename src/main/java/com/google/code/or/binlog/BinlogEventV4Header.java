@@ -43,4 +43,9 @@ public interface BinlogEventV4Header {
 	long getNextPosition();
 	
 	int getFlags();
+	
+	/**
+	 * 
+	 */
+	long getTimestampOfReceipt();
 }

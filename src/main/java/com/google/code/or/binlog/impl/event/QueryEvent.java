@@ -18,13 +18,11 @@ package com.google.code.or.binlog.impl.event;
 
 import java.util.List;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.binlog.StatusVariable;
 import com.google.code.or.common.glossary.column.StringColumn;
 import com.google.code.or.common.util.MySQLConstants;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * 
@@ -59,7 +57,8 @@ public final class QueryEvent extends AbstractBinlogEventV4 {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
+		.append("header", header)
 		.append("threadId", threadId)
 		.append("elapsedTime", elapsedTime)
 		.append("databaseNameLength", databaseNameLength)

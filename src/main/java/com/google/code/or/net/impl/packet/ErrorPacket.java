@@ -18,10 +18,9 @@ package com.google.code.or.net.impl.packet;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.common.glossary.column.StringColumn;
+import com.google.code.or.common.util.ToStringBuilder;
+import com.google.code.or.io.XInputStream;
 import com.google.code.or.io.util.XDeserializer;
 import com.google.code.or.io.util.XSerializer;
 import com.google.code.or.net.Packet;
@@ -49,7 +48,7 @@ public class ErrorPacket extends AbstractPacket {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("packetMarker", packetMarker)
 		.append("errorCode", errorCode)
 		.append("slash", slash)
@@ -126,6 +125,19 @@ public class ErrorPacket extends AbstractPacket {
 		r.slash = d.readFixedLengthString(1);
 		r.sqlState = d.readFixedLengthString(5);
 		r.errorMessage = d.readFixedLengthString(d.available());
+		return r;
+	}
+
+	public static ErrorPacket valueOf(int packetLength, int packetSequence, int packetMarker, XInputStream is)
+	throws IOException {
+		final ErrorPacket r = new ErrorPacket();
+		r.length = packetLength;
+		r.sequence = packetSequence;
+		r.packetMarker = packetMarker;
+		r.errorCode = is.readInt(2);
+		r.slash = is.readFixedLengthString(1);
+		r.sqlState = is.readFixedLengthString(5);
+		r.errorMessage = is.readFixedLengthString(is.available());
 		return r;
 	}
 }

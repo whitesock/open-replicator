@@ -18,9 +18,7 @@ package com.google.code.or.net.impl;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
+import com.google.code.or.common.util.ToStringBuilder;
 import com.google.code.or.net.Transport;
 import com.google.code.or.net.TransportContext;
 
@@ -77,7 +75,7 @@ public abstract class AbstractTransport implements Transport {
 		 */
 		@Override
 		public String toString() {
-			return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+			return new ToStringBuilder(this)
 			.append("threadId", threadId)
 			.append("scramble", scramble)
 			.append("protocolVersion", protocolVersion)

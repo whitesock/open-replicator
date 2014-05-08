@@ -16,11 +16,9 @@
  */
 package com.google.code.or.binlog.impl.event;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.BinlogEventV4Header;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * 
@@ -35,7 +33,7 @@ public abstract class AbstractBinlogEventV4 implements BinlogEventV4 {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("header", header).toString();
 	}
 	

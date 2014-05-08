@@ -27,14 +27,17 @@ public final class TinyColumn implements Column {
 	private static final long serialVersionUID = 3629858638897033423L;
 	
 	//
-	public static final int MIN_VALUE = Byte.MIN_VALUE;
-	public static final int MAX_VALUE = Byte.MAX_VALUE;
+	public static final int MIN_VALUE = 0;
+	public static final int MAX_VALUE = 256;
 	
 	//
-	private static final TinyColumn[] CACHE = new TinyColumn[255];
+	private static final TinyColumn[] CACHE = new TinyColumn[256];
 	static {
-		for(int i = 0; i < CACHE.length; i++) {
-			CACHE[i] = new TinyColumn(i + Byte.MIN_VALUE);
+		for(int i = 0; i < 128; i++) {
+			CACHE[i] = new TinyColumn(i);
+		}
+		for(int i = 128; i < 256; i++) {
+			CACHE[i] = new TinyColumn(i - 256);
 		}
 	}
 	
@@ -68,6 +71,6 @@ public final class TinyColumn implements Column {
 	 */
 	public static final TinyColumn valueOf(int value) {
 		if(value < MIN_VALUE || value > MAX_VALUE) throw new IllegalArgumentException("invalid value: " + value);
-		return CACHE[value - Byte.MIN_VALUE];
+		return CACHE[value];
 	}
 }

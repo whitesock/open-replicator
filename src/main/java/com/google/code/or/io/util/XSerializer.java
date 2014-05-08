@@ -19,8 +19,6 @@ package com.google.code.or.io.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.commons.lang.exception.NestableRuntimeException;
-
 import com.google.code.or.common.glossary.UnsignedLong;
 import com.google.code.or.common.glossary.column.StringColumn;
 import com.google.code.or.io.XOutputStream;
@@ -63,7 +61,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.flush();
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -71,7 +69,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.close();
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -79,7 +77,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeBytes(value);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -87,7 +85,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeBytes(value, length);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -95,7 +93,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeBytes(value, offset, length);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -103,7 +101,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeInt(value, length);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -111,7 +109,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeLong(value, length);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -119,7 +117,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeUnsignedLong(value);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -127,7 +125,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeLengthCodedString(value);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -135,7 +133,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeFixedLengthString(value);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -143,7 +141,7 @@ public final class XSerializer implements XOutputStream {
 		try {
 			this.tos.writeNullTerminatedString(value);
 		} catch (IOException e) {
-			throw new NestableRuntimeException(e);
+			throw new RuntimeException(e);
 		}
 	}
 }

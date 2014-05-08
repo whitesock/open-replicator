@@ -16,8 +16,7 @@
  */
 package com.google.code.or.net.impl.packet;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * 
@@ -35,7 +34,7 @@ public class RawPacket extends AbstractPacket {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("length", length)
 		.append("sequence", sequence).toString();
 	}

@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.google.code.or.binlog.BinlogEventListener;
 import com.google.code.or.binlog.BinlogEventV4;
 import com.google.code.or.binlog.impl.event.XidEvent;
-import com.google.code.or.logging.Log4jInitializer;
 
 public class OpenParserTest {
 	//
@@ -20,9 +19,6 @@ public class OpenParserTest {
 	 * 
 	 */
 	public static void main(String args[]) throws Exception {
-		//
-		Log4jInitializer.initialize();
-		
 		//
 		final OpenParser op = new OpenParser();
 		op.setStartPosition(4);

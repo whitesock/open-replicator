@@ -16,12 +16,10 @@
  */
 package com.google.code.or.binlog.impl.event;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.UnsignedLong;
 import com.google.code.or.common.util.MySQLConstants;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * Written every time a statement uses an AUTO_INCREMENT column or the LAST_INSERT_ID() function; 
@@ -55,7 +53,7 @@ public final class IntvarEvent extends AbstractBinlogEventV4 {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("header", header)
 		.append("type", type)
 		.append("value", value).toString();

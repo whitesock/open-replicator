@@ -16,8 +16,7 @@
  */
 package com.google.code.or.common.glossary;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * 
@@ -43,7 +42,7 @@ public final class Pair<T> {
 	 * 
 	 */
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+		return new ToStringBuilder(this)
 		.append("before", before)
 		.append("after", after).toString();
 	}

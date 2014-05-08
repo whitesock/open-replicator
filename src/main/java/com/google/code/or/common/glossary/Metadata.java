@@ -18,12 +18,11 @@ package com.google.code.or.common.glossary;
 
 import java.io.IOException;
 import java.io.Serializable;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import java.util.Arrays;
 
 import com.google.code.or.common.util.CodecUtils;
 import com.google.code.or.common.util.MySQLConstants;
+import com.google.code.or.common.util.ToStringBuilder;
 import com.google.code.or.io.util.XDeserializer;
 
 /**
@@ -51,8 +50,8 @@ public final class Metadata implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-		.append("metadata", metadata).toString();
+		return new ToStringBuilder(this)
+		.append("metadata", Arrays.toString(metadata)).toString();
 	}
 	
 	/**
@@ -93,6 +92,11 @@ public final class Metadata implements Serializable {
             case MySQLConstants.TYPE_ENUM:
             case MySQLConstants.TYPE_STRING:
             	metadata[i] = CodecUtils.toInt(d.readBytes(2), 0, 2); // Big-endian
+            	break;
+            case MySQLConstants.TYPE_TIME2:
+            case MySQLConstants.TYPE_DATETIME2:
+            case MySQLConstants.TYPE_TIMESTAMP2:
+            	metadata[i] = d.readInt(1);
             	break;
             default:
             	metadata[i] = 0;

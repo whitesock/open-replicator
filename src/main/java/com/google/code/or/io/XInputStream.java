@@ -50,6 +50,8 @@ public interface XInputStream {
 	
 	byte[] readBytes(int length) throws IOException;
 	
+	BitColumn readBit(int length) throws IOException;
+	
 	UnsignedLong readUnsignedLong() throws IOException;
 	
 	StringColumn readLengthCodedString() throws IOException;
@@ -58,5 +60,9 @@ public interface XInputStream {
 	
 	StringColumn readFixedLengthString(int length) throws IOException;
 	
-	BitColumn readBit(int length, boolean isBigEndian) throws IOException;
+	int readInt(int length, boolean littleEndian) throws IOException;
+	
+	long readLong(int length, boolean littleEndian) throws IOException;
+	
+	BitColumn readBit(int length, boolean littleEndian) throws IOException;
 }

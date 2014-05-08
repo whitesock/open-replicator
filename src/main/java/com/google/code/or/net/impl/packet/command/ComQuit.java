@@ -18,10 +18,8 @@ package com.google.code.or.net.impl.packet.command;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import com.google.code.or.common.util.MySQLConstants;
+import com.google.code.or.common.util.ToStringBuilder;
 
 /**
  * 
@@ -43,7 +41,7 @@ public class ComQuit extends AbstractCommandPacket {
 	 */
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).toString();
+		return new ToStringBuilder(this).toString();
 	}
 	
 	/**

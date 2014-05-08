@@ -36,9 +36,11 @@ import com.google.code.or.binlog.impl.variable.status.QFlags2Code;
 import com.google.code.or.binlog.impl.variable.status.QInvoker;
 import com.google.code.or.binlog.impl.variable.status.QLcTimeNamesCode;
 import com.google.code.or.binlog.impl.variable.status.QMasterDataWrittenCode;
+import com.google.code.or.binlog.impl.variable.status.QMicroseconds;
 import com.google.code.or.binlog.impl.variable.status.QSQLModeCode;
 import com.google.code.or.binlog.impl.variable.status.QTableMapForUpdateCode;
 import com.google.code.or.binlog.impl.variable.status.QTimeZoneCode;
+import com.google.code.or.binlog.impl.variable.status.QUpdatedDBNames;
 import com.google.code.or.io.XInputStream;
 import com.google.code.or.io.util.XDeserializer;
 
@@ -97,6 +99,8 @@ public class QueryEventParser extends AbstractBinlogEventParser {
 			case QTimeZoneCode.TYPE: r.add(QTimeZoneCode.valueOf(d)); break;
 			case QMasterDataWrittenCode.TYPE: r.add(QMasterDataWrittenCode.valueOf(d)); break;
 			case QInvoker.TYPE: r.add(QInvoker.valueOf(d)); break;
+			case QUpdatedDBNames.TYPE: r.add(QUpdatedDBNames.valueOf(d)); break;
+			case QMicroseconds.TYPE: r.add(QMicroseconds.valueOf(d)); break;
 			default: LOGGER.warn("unknown status variable type: " + type); abort = true; break;
 			}
 		}

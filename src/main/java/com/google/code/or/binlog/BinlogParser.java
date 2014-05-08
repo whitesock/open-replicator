@@ -16,6 +16,7 @@
  */
 package com.google.code.or.binlog;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,4 +41,15 @@ public interface BinlogParser {
 	void setEventFilter(BinlogEventFilter filter);
 	
 	void setEventListener(BinlogEventListener listener);
+	
+	/**
+	 * 
+	 */
+	List<BinlogParserListener> getParserListeners();
+	
+	boolean addParserListener(BinlogParserListener listener);
+	
+	boolean removeParserListener(BinlogParserListener listener);
+	
+	void setParserListeners(List<BinlogParserListener> listeners);
 }
