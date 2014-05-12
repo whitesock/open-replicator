@@ -16,6 +16,8 @@
  */
 package com.google.code.or.binlog.impl.event;
 
+import java.util.Arrays;
+
 import com.google.code.or.binlog.BinlogEventV4Header;
 import com.google.code.or.common.glossary.column.StringColumn;
 import com.google.code.or.common.util.MySQLConstants;
@@ -59,7 +61,7 @@ public final class FormatDescriptionEvent extends AbstractBinlogEventV4 {
 		.append("serverVersion", serverVersion)
 		.append("createTimestamp", createTimestamp)
 		.append("headerLength", headerLength)
-		.append("eventTypes", eventTypes).toString();
+		.append("eventTypes", Arrays.toString(eventTypes)).toString();
 	}
 	
 	/**

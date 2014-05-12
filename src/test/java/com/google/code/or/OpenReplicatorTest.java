@@ -25,8 +25,8 @@ public class OpenReplicatorTest {
 		or.setHost("192.168.1.216");
 		or.setPort(3306);
 		or.setServerId(6789);
-		or.setBinlogPosition(599421378);
-		or.setBinlogFileName("mysql-bin.000002");
+		or.setBinlogPosition(120);
+		or.setBinlogFileName("mysql-bin.000003");
 		or.setBinlogEventListener(new BinlogEventListener() {
 		    public void onEvents(BinlogEventV4 event) {
 		    	LOGGER.info("{}", event);
