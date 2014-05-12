@@ -24,7 +24,7 @@ For MySQL 5.6.6 users, binlog_checksum system variable is NOT supported by open-
 <dependency>
         <groupId>open-replicator</groupId>
         <artifactId>open-replicator</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
 </dependency>
 ```
 ### parsers
