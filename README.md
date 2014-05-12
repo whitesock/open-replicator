@@ -19,6 +19,10 @@ For MySQL 5.6.6 users, binlog_checksum system variable is NOT supported by open-
     remove dependency commons-lang, log4j
     support MYSQL_TYPE_TIMESTAMP2, MYSQL_TYPE_DATETIME2, MYSQL_TYPE_TIME2 
 
+1.0.0
+
+    release date: 2011-12-29
+    
 ### maven
 ```
 <dependency>
