@@ -8,7 +8,11 @@ Open Replicator is a high performance MySQL binlog parser written in Java. It un
 For MySQL 5.6.6 users, binlog_checksum system variable is NOT supported by open-replicator at the moment, please set it to NONE.
 
 ### releases
+1.0.7
 
+    release date: 2014-05-12
+    support signed tinyint, smallint, mediumint, int, bigint
+    
 1.0.6
 
     release date: 2014-05-08
