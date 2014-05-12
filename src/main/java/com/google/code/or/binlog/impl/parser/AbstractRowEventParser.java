@@ -126,11 +126,11 @@ public abstract class AbstractRowEventParser extends AbstractBinlogEventParser {
 			
 			//
 			switch(type) {
-			case MySQLConstants.TYPE_TINY: columns.add(TinyColumn.valueOf(is.readInt(1))); break;
-			case MySQLConstants.TYPE_SHORT: columns.add(ShortColumn.valueOf(is.readInt(2))); break;
-			case MySQLConstants.TYPE_INT24: columns.add(Int24Column.valueOf(is.readInt(3))); break;
-			case MySQLConstants.TYPE_LONG: columns.add(LongColumn.valueOf(is.readInt(4))); break;
-			case MySQLConstants.TYPE_LONGLONG: columns.add(LongLongColumn.valueOf(is.readLong(8))); break;
+			case MySQLConstants.TYPE_TINY: columns.add(TinyColumn.valueOf(is.readSignedInt(1))); break;
+			case MySQLConstants.TYPE_SHORT: columns.add(ShortColumn.valueOf(is.readSignedInt(2))); break;
+			case MySQLConstants.TYPE_INT24: columns.add(Int24Column.valueOf(is.readSignedInt(3))); break;
+			case MySQLConstants.TYPE_LONG: columns.add(LongColumn.valueOf(is.readSignedInt(4))); break;
+			case MySQLConstants.TYPE_LONGLONG: columns.add(LongLongColumn.valueOf(is.readSignedLong(8))); break;
 			case MySQLConstants.TYPE_FLOAT: columns.add(FloatColumn.valueOf(Float.intBitsToFloat(is.readInt(4)))); break;
 			case MySQLConstants.TYPE_DOUBLE: columns.add(DoubleColumn.valueOf(Double.longBitsToDouble(is.readLong(8)))); break;
 			case MySQLConstants.TYPE_YEAR: columns.add(YearColumn.valueOf(MySQLUtils.toYear(is.readInt(1)))); break;

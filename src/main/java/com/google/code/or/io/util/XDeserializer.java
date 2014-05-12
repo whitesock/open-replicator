@@ -82,6 +82,14 @@ public class XDeserializer implements XInputStream {
 		return readBit(length);
 	}
 	
+	public int readSignedInt(int length) throws IOException {
+		return this.tis.readSignedInt(length);
+	}
+
+	public long readSignedLong(int length) throws IOException {
+		return this.tis.readSignedLong(length);
+	}
+	
 	public UnsignedLong readUnsignedLong() throws IOException {
 		return tis.readUnsignedLong();
 	}

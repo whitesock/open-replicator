@@ -107,6 +107,34 @@ public class XInputStreamImpl extends InputStream implements XInputStream {
 	/**
 	 * 
 	 */
+	public int readSignedInt(int length) throws IOException {
+		int r = 0;
+		for(int i = 0; i < length; ++i) {
+			final int v = this.read();
+			r |= (v << (i << 3));
+			if((i == length - 1) && ((v & 0x80) == 0x80)) {
+				for(int j = length; j < 4; j++) {
+				    r |= (255 << (j << 3));
+				}
+			}
+		}
+		return r;
+	}
+
+	public long readSignedLong(int length) throws IOException {
+		long r = 0;
+		for(int i = 0; i < length; ++i) {
+			final long v = this.read();
+			r |= (v << (i << 3));
+			if((i == length - 1) && ((v & 0x80) == 0x80)) {
+				for(int j = length; j < 8; j++) {
+				    r |= (255 << (j << 3));
+				}
+			}
+		}
+		return r;
+	}
+	
 	public int readInt(int length, boolean littleEndian) throws IOException {
 		int r = 0;
 		for(int i = 0; i < length; ++i) {

@@ -52,6 +52,10 @@ public interface XInputStream {
 	
 	BitColumn readBit(int length) throws IOException;
 	
+	int readSignedInt(int length) throws IOException;
+	
+	long readSignedLong(int length) throws IOException;
+	
 	UnsignedLong readUnsignedLong() throws IOException;
 	
 	StringColumn readLengthCodedString() throws IOException;
