@@ -97,6 +97,14 @@ public final class ActiveBufferedInputStream extends InputStream implements Runn
 			this.exception = e;
 		} catch(Exception e) {
 			LOGGER.error("failed to transfer data", e);
+		} finally {
+			if (!this.closed.get()) {
+				try {
+					close();
+				} catch (IOException e) {
+					LOGGER.error("failed to close is", e);
+				}
+			}
 		}
 	}
 	
