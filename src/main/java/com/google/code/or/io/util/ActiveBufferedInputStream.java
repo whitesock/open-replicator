@@ -32,6 +32,7 @@ import com.google.code.or.common.util.XThreadFactory;
 /**
  * 
  * @author Jingqi Xu
+ * @author andyqzb
  */
 public final class ActiveBufferedInputStream extends InputStream implements Runnable {
 	//
