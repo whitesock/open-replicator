@@ -53,6 +53,7 @@ import com.google.code.or.net.impl.packet.command.ComBinlogDumpPacket;
 /**
  * 
  * @author Jingqi Xu
+ * @author darnaut
  */
 public class OpenReplicator {
 	//

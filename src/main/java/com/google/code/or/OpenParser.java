@@ -25,6 +25,7 @@ import com.google.code.or.binlog.impl.FileBasedBinlogParser;
 import com.google.code.or.binlog.impl.parser.DeleteRowsEventParser;
 import com.google.code.or.binlog.impl.parser.DeleteRowsEventV2Parser;
 import com.google.code.or.binlog.impl.parser.FormatDescriptionEventParser;
+import com.google.code.or.binlog.impl.parser.GtidEventParser;
 import com.google.code.or.binlog.impl.parser.IncidentEventParser;
 import com.google.code.or.binlog.impl.parser.IntvarEventParser;
 import com.google.code.or.binlog.impl.parser.QueryEventParser;
@@ -38,11 +39,11 @@ import com.google.code.or.binlog.impl.parser.UserVarEventParser;
 import com.google.code.or.binlog.impl.parser.WriteRowsEventParser;
 import com.google.code.or.binlog.impl.parser.WriteRowsEventV2Parser;
 import com.google.code.or.binlog.impl.parser.XidEventParser;
-import com.google.code.or.binlog.impl.parser.GtidEventParser;
 
 /**
  * 
  * @author Jingqi Xu
+ * @author darnaut
  */
 public class OpenParser {
 	//
