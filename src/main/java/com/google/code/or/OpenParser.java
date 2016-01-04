@@ -38,6 +38,7 @@ import com.google.code.or.binlog.impl.parser.UserVarEventParser;
 import com.google.code.or.binlog.impl.parser.WriteRowsEventParser;
 import com.google.code.or.binlog.impl.parser.WriteRowsEventV2Parser;
 import com.google.code.or.binlog.impl.parser.XidEventParser;
+import com.google.code.or.binlog.impl.parser.GtidEventParser;
 
 /**
  * 
@@ -160,6 +161,7 @@ public class OpenParser {
 		r.registgerEventParser(new UpdateRowsEventV2Parser());
 		r.registgerEventParser(new DeleteRowsEventV2Parser());
 		r.registgerEventParser(new FormatDescriptionEventParser());
+		r.registgerEventParser(new GtidEventParser());
 		
 		//
 		r.setStopPosition(this.stopPosition);
