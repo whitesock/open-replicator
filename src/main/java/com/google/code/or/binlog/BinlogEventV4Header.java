@@ -47,5 +47,7 @@ public interface BinlogEventV4Header {
 	/**
 	 * 
 	 */
+	String getBinlogFileName();
+	
 	long getTimestampOfReceipt();
 }

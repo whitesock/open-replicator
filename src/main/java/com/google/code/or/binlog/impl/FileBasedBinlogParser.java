@@ -115,6 +115,7 @@ public class FileBasedBinlogParser extends AbstractBinlogParser {
 				header.setEventLength(is.readInt(4));
 				header.setNextPosition(is.readLong(4));
 				header.setFlags(is.readInt(2));
+				header.setBinlogFileName(this.binlogFileName);
 				header.setTimestampOfReceipt(System.currentTimeMillis());
 				is.setReadLimit((int)(header.getEventLength() - header.getHeaderLength())); // Ensure the event boundary
 				if(isVerbose() && LOGGER.isInfoEnabled()) {

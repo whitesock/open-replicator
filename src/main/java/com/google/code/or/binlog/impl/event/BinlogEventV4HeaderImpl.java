@@ -31,6 +31,8 @@ public final class BinlogEventV4HeaderImpl implements BinlogEventV4Header {
 	private long eventLength;
 	private long nextPosition;
 	private int flags;
+	
+	private String binlogFileName;
 	private long timestampOfReceipt;
 	
 	/**
@@ -45,6 +47,7 @@ public final class BinlogEventV4HeaderImpl implements BinlogEventV4Header {
 		.append("eventLength", eventLength)
 		.append("nextPosition", nextPosition)
 		.append("flags", flags)
+		.append("binlogFileName", binlogFileName)
 		.append("timestampOfReceipt", timestampOfReceipt).toString();
 	}
 	
@@ -108,6 +111,14 @@ public final class BinlogEventV4HeaderImpl implements BinlogEventV4Header {
 	
 	public void setFlags(int flags) {
 		this.flags = flags;
+	}
+	
+	public String getBinlogFileName() {
+		return binlogFileName;
+	}
+
+	public void setBinlogFileName(String binlogFileName) {
+		this.binlogFileName = binlogFileName;
 	}
 	
 	public long getTimestampOfReceipt() {
